@@ -1,0 +1,61 @@
+#
+# Valores para testes em k3d local.
+# Esta configuração assume que nomes "*.localhost" resolvem para localhost. Se não for o caso basta
+# criar entradas manualmente em /etc/hosts .
+#
+
+image:
+  repository: kong/kong-gateway
+  tag: "2.5.0.1"
+env:
+  # database: "off"
+  admin_gui_url: "http://manager.localhost:8000"
+  admin_api_uri: "http://admin.localhost:8000"
+  log_level: notice
+ingressController:
+  enabled: true
+  installCRDs: false
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+proxy:
+  enabled: true
+  type: NodePort
+  http:
+    enabled: true
+    servicePort: 8000
+    containerPort: 8000
+    nodePort: 30080
+    parameters: []
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    # annotations:
+    #   kubernetes.io/ingress.class: "kong"
+    hostname: admin.localhost
+    path: "/"
+manager:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    # annotations:
+    #   kubernetes.io/ingress.class: "kong"
+    hostname: manager.localhost
+    path: "/"
+portal:
+  enabled: false
+portalapi:
+  enabled: false

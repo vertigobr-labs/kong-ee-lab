@@ -1,0 +1,9 @@
+license.json
+teste*
+tmpyml
+okteto-deploy.yaml
+admin_gui_session_conf
+portal_session_conf
+figlet.yaml
+*.pem
+registry/

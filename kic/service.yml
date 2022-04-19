@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cep
+  annotations:
+    konghq.com/path: "/ws"
+spec:
+  type: ExternalName
+  externalName: viacep.com.br
+  ports:
+  - protocol: TCP
+    port: 80

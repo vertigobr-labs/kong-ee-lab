@@ -1,0 +1,133 @@
+#
+# Valores para testes em k3d local.
+# Esta configuração assume que nomes "*.localhost" resolvem para localhost. Se não for o caso basta
+# criar entradas manualmente em /etc/hosts .
+#
+
+image:
+  repository: kong/kong-gateway
+  tag: "2.7.1.2"
+env:
+  database: postgres
+  pg_host: "postgres-postgresql.vkpr.svc"
+  #pg_host: "kong-postgresql"
+  pg_user: kong
+  pg_password: kong
+  pg_database: kong
+  pg_port: 5432
+  portal: on
+  portal_auth: "basic-auth"
+  portal_auto_approve: on
+  portal_session_conf:
+    valueFrom:
+      secretKeyRef:
+        name: kong-session-config
+        key: portal_session_conf
+  admin_gui_url: "http://manager.localhost:8000"
+  admin_api_uri: "http://api.manager.localhost:8000"
+  portal_gui_host: "portal.localhost:8000"
+  proxy_url: "http://kong.localhost:9000"
+  portal_api_url: "http://api.portal.localhost:8000"
+  portal_gui_protocol: "http"
+  log_level: notice
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+ingressController:
+  enabled: true
+  installCRDs: false
+  env:
+    kong_admin_token:
+      valueFrom:
+        secretKeyRef:
+          name: kong-enterprise-superuser-password
+          key: password
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  rbac:
+    enabled: true
+    admin_gui_auth: basic-auth
+    session_conf_secret: kong-session-config
+proxy:
+  enabled: true
+  type: NodePort
+  http:
+    enabled: true
+    servicePort: 8000
+    containerPort: 8000
+    nodePort: 30080
+    parameters: []
+  tls:
+    enabled: true
+    servicePort: 8443
+    containerPort: 8443
+    nodePort: 30081
+    parameters:
+    - http2
+  ingress:
+    enabled: false
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    annotations:
+      #kubernetes.io/ingress.class: "nginx"
+    hostname: api.manager.localhost
+    path: "/"
+manager:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    annotations:
+      #kubernetes.io/ingress.class: "nginx"
+    hostname: manager.localhost
+    path: "/"
+portal:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: portal.localhost
+    path: "/"
+portalapi:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: api.portal.localhost
+    path: "/"
+status:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+postgresql:
+  enabled: false
+  # postgresqlPostgresPassword: kongadmin123
+  # postgresqlDatabase: kong
+  # postgresqlUsername: kong
+  # postgresqlPassword: kong
+  # service:
+  #   port: 5432
+  # volumePermissions:
+  #   enabled: true
+  # persistence:
+  #   size: 2Gi

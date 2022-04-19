@@ -1,0 +1,121 @@
+#
+# Valores para testes no Okteto.
+#
+
+# kong dependent chart (i.e. subchart) values
+image:
+  repository: kong/kong-gateway
+  #tag: "2.8"
+env:
+  database: postgres
+  pg_host: "kong-postgresql"
+  pg_user: kong
+  pg_password: kong
+  pg_database: kong
+  pg_port: 5432
+  portal: on
+  portal_auth: "basic-auth"
+  portal_auto_approve: on
+  admin_gui_url: "https://kong-kong-manager-NAMESPACE.cloud.okteto.net"
+  admin_api_uri: "https://kong-kong-admin-NAMESPACE.cloud.okteto.net"
+  portal_gui_host: "kong-kong-portal-NAMESPACE.cloud.okteto.net"
+  proxy_url: "https://kong-kong-proxy-NAMESPACE.cloud.okteto.net"
+  portal_api_url: "https://kong-kong-portalapi-NAMESPACE.cloud.okteto.net"
+  portal_gui_protocol: "https"
+  log_level: notice
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+  portal_session_conf:
+    valueFrom:
+      secretKeyRef:
+        name: kong-session-config
+        key: portal_session_conf
+ingressController:
+  enabled: false
+  installCRDs: false
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  smtp:
+    disabled: true
+  rbac:
+    enabled: true
+    admin_gui_auth: basic-auth
+    session_conf_secret: kong-session-config
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+proxy:
+  enabled: true
+  type: ClusterIP
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+manager:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+portal:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+portalapi:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+status:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+postgresql:
+  enabled: true
+  auth:
+    username: kong
+    password: kong
+    database: kong
+  primary:
+    persistence:
+      size: 2Gi
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+

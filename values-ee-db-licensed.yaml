@@ -1,0 +1,115 @@
+#
+# Valores para testes em k3d local.
+# Esta configuração assume que nomes "*.localhost" resolvem para localhost. Se não for o caso basta
+# criar entradas manualmente em /etc/hosts.
+#
+# Atenção para possíveis problemas com CORS (https://docs.konghq.com/enterprise/1.5.x/deployment/dns-considerations/)
+#
+
+image:
+  repository: kong/kong-gateway
+  tag: "2.5.0.1"
+env:
+  database: postgres
+  pg_host: "kong-postgresql"
+  pg_user: kong
+  pg_password: kong
+  pg_database: kong
+  pg_port: 5432
+  portal: on
+  portal_auth: "basic-auth"
+  portal_auto_approve: on
+  admin_gui_url: "http://manager.localhost:8000"
+  admin_api_uri: "http://api.manager.localhost:8000"
+  portal_gui_host: "portal.localhost:8000"
+  proxy_url: "http://kong.localhost:8000"
+  portal_api_url: "http://api.portal.localhost:8000"
+  portal_gui_protocol: "http"
+  log_level: notice
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+  portal_session_conf:
+    valueFrom:
+      secretKeyRef:
+        name: kong-session-config
+        key: portal_session_conf
+ingressController:
+  enabled: false
+  installCRDs: false
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  rbac:
+    enabled: true
+    admin_gui_auth: basic-auth
+    session_conf_secret: kong-session-config
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: api.manager.localhost
+    path: "/"
+proxy:
+  type: ClusterIP
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hosts:
+      - kong.localhost
+    path: "/"
+manager:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: manager.localhost
+    path: "/"
+portal:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: portal.localhost
+    path: "/"
+portalapi:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: api.portal.localhost
+    path: "/"
+status:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+postgresql:
+  enabled: true
+  # postgresqlPostgresPassword: kongadmin123
+  postgresqlDatabase: kong
+  postgresqlUsername: kong
+  postgresqlPassword: kong
+  service:
+    port: 5432
+  # persistence:
+  #   size: 2Gi

@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cep-ingress
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/strip-path: "true"
+    konghq.com/preserve-host: "false"
+    konghq.com/protocols: "http"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /cep
+        backend:
+          serviceName: cep
+          servicePort: 80

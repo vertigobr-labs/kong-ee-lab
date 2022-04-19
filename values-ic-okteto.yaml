@@ -1,0 +1,203 @@
+#
+# Valores para testes .no Okteto Cloud
+#
+# helm upgrade -i -f values-db-okteto.yaml kong-local vtg-ipaas/vtg-ipaas
+#
+
+# kong dependent chart (i.e. subchart) values
+kong:
+  ingressController:
+    image:
+      repository: vertigo/kong-ingress-controller
+      tag: 0.9.0
+    enabled: true
+    installCRDs: false
+    env:
+      watch_namespace: andrevtg
+  admin:
+    enabled: true
+    http:
+      enabled: true
+    type: ClusterIP
+    tls:
+      enabled: false
+  # proxy:
+  #   type: ClusterIP
+  #   http:
+  #     enabled: true
+  #   tls:
+  #     enabled: false
+  #   ingress:
+  #     enabled: false
+  #   annotations:
+  #     dev.okteto.com/auto-ingress: "true"
+  postgres:
+    enabled: false
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+konga:
+  enabled: true
+  config:
+    # node_env: production
+    node_env: development
+    ssl_key_path: ""
+    ssl_crt_path: ""
+    db_adapter: postgres
+    # db_adapter: localDiskDb
+    log_level: debug
+    token_secret: ""
+    konga_node_data: "/opt/config/konga_node.data"
+    konga_user_data: "/opt/config/konga_user.data"
+    db_host: kong-okteto-postgresql
+    db_port: 5432
+    db_user: konga
+    db_password: konga123
+    db_database: konga
+    db_pg_schema: public
+    # db_uri: postgresql://[user[:password]@][netloc][:port][/dbname]
+    db_uri: postgresql://konga:konga123@kong-okteto-postgresql/konga
+    # konga_hook_timeout: 60000
+  # CUIDADO COM A INDENTACAO NOS EXTRAS
+  extraVolumes:
+  - name: config
+    configMap:
+      name: kong-okteto-vtg-ipaas-konga-init
+      items:
+        - key: konga_node.data
+          path: konga_node.data
+          mode: 292 # 0444
+        - key: konga_user.data
+          path: konga_user.data
+          mode: 292 # 0444
+  extraVolumeMounts:
+    - name: config
+      mountPath: /opt/config
+  ingress:
+    enabled: false
+  service:
+    annotations:
+      dev.okteto.com/auto-ingress: "true"
+  resources:
+    limits:
+      cpu: 300m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+postgresql:
+  enabled: true
+  postgresqlPostgresPassword: pgadmin123
+  postgresqlUsername: konga
+  postgresqlPassword: konga123
+  postgresqlDatabase: konga
+  persistence:
+    size: 2Gi
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 200m
+      memory: 128Mi
+
+pgadmin:
+  enabled: false
+  ingress:
+    enabled: false
+  persistence:
+    enabled: true
+  # env:
+  #   username: "pgadmin@aqui.com"
+  #   password: SuperSecret
+
+openfaas:
+  enabled: true
+  functionNamespace: andrevtg
+  generateBasicAuth: true
+  clusterRole: false
+  serviceType: ClusterIP
+  gatewayExternal:
+    annotations:
+      dev.okteto.com/auto-ingress: "true"
+  gateway:
+    resources:
+      limits:
+        memory: "120Mi"
+        cpu: "50m"
+      requests:
+        memory: "120Mi"
+        cpu: "50m"
+  basicAuthPlugin:
+    resources:
+      limits:
+        memory: "50Mi"
+        cpu: "20m"
+      requests:
+        memory: "50Mi"
+        cpu: "20m"
+  faasnetes:
+    resources:
+      limits:
+        memory: "120Mi"
+        cpu: "50m"
+      requests:
+        memory: "120Mi"
+        cpu: "50m"
+  operator:
+    create: true
+    createCRD: false
+    resources:
+      limits:
+        memory: "120Mi"
+        cpu: "50m"
+      requests:
+        memory: "120Mi"
+        cpu: "50m"
+  queueWorker:
+    resources:
+      limits:
+        memory: "120Mi"
+        cpu: "50m"
+      requests:
+        memory: "120Mi"
+        cpu: "50m"
+  nats:
+    resources:
+      limits:
+        memory: "120Mi"
+        cpu: "50m"
+      requests:
+        memory: "120Mi"
+        cpu: "50m"
+  faasIdler:
+    resources:
+      limits:
+        memory: "64Mi"
+        cpu: "50m"
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+  # ingress:
+  #   enabled: true
+  #   annotations:
+  #     kubernetes.io/ingress.class: kong
+  #   hosts:
+  #   - host: gateway.ipaas.localdomain
+  #     serviceName: gateway
+  #     servicePort: 8080
+  #     path: /
+  prometheus:
+    create: false
+  alertmanager:
+    create: false
+
+# TODO: permitir alternativa single node com redis comum
+redis-ha:
+  enabled: false

@@ -1,0 +1,144 @@
+#
+# Valores para testes em k3d local.
+#
+# helm upgrade -i -f values-db.yaml kong-local vtg-ipaas/vtg-ipaas
+#
+
+# kong dependent chart (i.e. subchart) values
+kong:
+  ingressController:
+    enabled: false
+  env:
+    database: postgres
+    pg_host: kong-local-postgresql
+    pg_password: kong
+  admin:
+    enabled: true
+    http:
+      enabled: true
+    type: ClusterIP
+    tls:
+      enabled: false
+  proxy:
+    type: ClusterIP
+    http:
+      enabled: true
+    tls:
+      enabled: false
+    ingress:
+      enabled: true
+      hosts:
+        - ipaas.localdomain
+      path: "/"
+  postgres:
+    enabled: false
+    postgresqlPostgresPassword: kongadmin123
+    postgresqlUsername: kong
+    postgresqlPassword: kong
+    postgresqlDatabase: kong
+    service:
+      port: 5432
+
+konga:
+  enabled: true
+  config:
+    # node_env: production
+    node_env: development
+    ssl_key_path: ""
+    ssl_crt_path: ""
+    db_adapter: postgres
+    # db_adapter: localDiskDb
+    log_level: debug
+    token_secret: ""
+    konga_node_data: "/opt/config/konga_node.data"
+    konga_user_data: "/opt/config/konga_user.data"
+    db_host: kong-local-postgresql
+    db_port: 5432
+    db_user: konga
+    db_password: konga123
+    db_database: konga
+    db_pg_schema: public
+    # db_uri: postgresql://[user[:password]@][netloc][:port][/dbname]
+    db_uri: postgresql://konga:konga123@kong-local-postgresql/konga
+    # konga_hook_timeout: 60000
+  # CUIDADO COM A INDENTACAO NOS EXTRAS
+  extraVolumes:
+  - name: config
+    configMap:
+      name: kong-local-vtg-ipaas-konga-init
+      items:
+        - key: konga_node.data
+          path: konga_node.data
+          mode: 292 # 0444
+        - key: konga_user.data
+          path: konga_user.data
+          mode: 292 # 0444
+  extraVolumeMounts:
+    - name: config
+      mountPath: /opt/config
+  ingress:
+    enabled: true
+    annotations:
+      #kubernetes.io/ingress.class: kong # so há um ingress controller (kong)
+    hosts:
+      - host: konga.localdomain
+        paths: ["/"]
+
+# initscript para criar ambos os usuários kong e konga no mesmo database
+postgresql:
+  enabled: true
+  postgresqlPostgresPassword: pgadmin123
+  postgresqlUsername: konga
+  postgresqlPassword: konga123
+  postgresqlDatabase: konga
+  initdbUser: postgres
+  initdbPassword: pgadmin123
+  initdbScripts:
+    konginit.sql: |
+      CREATE USER kong WITH PASSWORD 'kong';
+      CREATE DATABASE kong;
+      GRANT ALL PRIVILEGES ON DATABASE kong TO kong;
+
+pgadmin:
+  enabled: false
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: pgadmin.localdomain
+        paths: ["/"]
+    tls:
+      - hosts:
+        - pgadmin.localdomain
+        secretName: pgadmin-cert
+  persistence:
+    enabled: true
+  # env:
+  #   username: "pgadmin@aqui.com"
+  #   password: SuperSecret
+
+openfaas:
+  enabled: false
+  functionNamespace: openfaas-fn
+  generateBasicAuth: true
+  operator:
+    create: true
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: kong
+    hosts:
+    - host: gateway.ipaas.localdomain
+      serviceName: gateway
+      servicePort: 8080
+      path: /
+  prometheus:
+    create: false
+  alertmanager:
+    create: false
+
+# TODO: permitir alternativa single node com redis comum
+redis-ha:
+  enabled: false
