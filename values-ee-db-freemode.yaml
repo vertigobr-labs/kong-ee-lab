@@ -14,20 +14,13 @@ env:
   pg_password: kong
   pg_database: kong
   pg_port: 5432
-  portal: on
-  portal_auth: "basic-auth"
-  portal_session_conf: "{\"cookie_name\":\"portal_session\",\"cookie_samesite\":\"Strict\",\"secret\":\"myportalsessionid\",\"cookie_secure\":false,\"storage\":\"kong\",\"cookie_domain\":\"localhost\"}"
-  portal_auto_approve: on
+  portal: off
   admin_gui_url: "http://manager.localhost:8000"
   admin_api_uri: "http://admin.localhost:8000"
-  portal_gui_host: "portal.localhost:8000"
-  proxy_url: "http://kong.localhost:8000"
-  portal_api_url: "http://api.portal.localhost:8000"
-  portal_gui_protocol: "http"
+  proxy_url: "http://localhost:8000"
   log_level: notice
 ingressController:
-  enabled: false
-  installCRDs: false
+  enabled: true
 enterprise:
   enabled: true
 admin:
@@ -40,17 +33,16 @@ admin:
     enabled: true
     hostname: admin.localhost
     path: "/"
+    annotations:
+      kubernetes.io/ingress.class: "kong"
 proxy:
-  type: ClusterIP
+  type: LoadBalancer
   http:
     enabled: true
   tls:
     enabled: false
   ingress:
-    enabled: true
-    hosts:
-      - kong.localhost
-    path: "/"
+    enabled: false
 manager:
   enabled: true
   http:
@@ -61,26 +53,12 @@ manager:
     enabled: true
     hostname: manager.localhost
     path: "/"
+    annotations:
+      kubernetes.io/ingress.class: "kong"
 portal:
-  enabled: true
-  http:
-    enabled: true
-  tls:
-    enabled: false
-  ingress:
-    enabled: true
-    hostname: portal.localhost
-    path: "/"
+  enabled: false
 portalapi:
-  enabled: true
-  http:
-    enabled: true
-  tls:
-    enabled: false
-  ingress:
-    enabled: true
-    hostname: api.portal.localhost
-    path: "/"
+  enabled: false
 status:
   enabled: true
   http:

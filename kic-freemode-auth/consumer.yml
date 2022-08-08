@@ -1,0 +1,27 @@
+#
+# user teste
+# password senha
+#
+apiVersion: v1
+kind: Secret
+metadata:
+  name: testepwd
+stringData:
+  kongCredType: basic-auth
+  credType: basic-auth
+  username: teste
+  password: senha
+type: Opaque
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: teste
+  annotations:
+    kubernetes.io/ingress.class: kong
+username: teste
+credentials:
+- testepwd
+

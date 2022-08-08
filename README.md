@@ -18,15 +18,15 @@ Instruções para rodar Kong Gateway (Enterprise) usando o chart oficial da Kong
 
 ### Kong Gateway OSS vs Kong Gateway (Free Mode) vs Kong Gateway (Enterprise)
 
-O Kong Gateway (Enterprise) pode ser executado em "Free Mode" (i.e. sem licenciamento) ou em modo "Enterprise" (com licenciamento), bastando fornecer um arquivo de licença válido. Confira [as diferenças entre Free Mode e Enterprise](https://docs.konghq.com/enterprise/2.4.x/deployment/licensing/).
+O Kong Gateway (antigo "Enterprise") pode ser executado em "Free Mode" (i.e. sem licenciamento) ou em modo "Enterprise" (com licenciamento), bastando fornecer um arquivo de licença válido. Confira [as diferenças entre Free Mode e Enterprise](https://docs.konghq.com/gateway/latest/plan-and-deploy/licenses/).
 
-Tipicamente no Kong Gateway em "Free Mode" o Kong Manager está disponível (embora sem autenticação), mas todos os demais componentes do Kong Gateway (Dev Portal, Vitals etc.) não funcionam ou funcionam de forma limitada. Em "Free Mode" não há RBAC e isto afeta diversas funcionalidades, mas a presença da UI do Manager é de grande ajuda.
+Tipicamente no Kong Gateway em "Free Mode" o Kong Manager está disponível (embora sem autenticação), mas todos os demais componentes do Kong Gateway (Dev Portal, Vitals etc.) não funcionam. Em "Free Mode" não há RBAC e isto afeta diversas funcionalidades, mas a presença da UI do Manager é de grande ajuda.
 
 Já o Kong Gateway OSS não possui nenhum elemento de interface gráfica, podendo contudo ser administrado via Admin API ou por produtos de terceiros que a utilizem (como o Konga).
 
 ### Kong "normal" vs Kong db-less vs Kong Ingress Controller
 
-Um ambiente "normal" do Kong permite sua configuração via Admin API. A Admin API é, na verdade, o backend utilizado tanto pelo Kong Manager quanto pelo Konga (alternativa ao Kong Manager). **Neste modo de operação o Kong precisa de um database associado**.
+Um ambiente "normal" do Kong permite sua configuração via Admin API. A Admin API é, na verdade, o backend utilizado tanto pelo Kong Manager quanto pelo Konga (alternativa ao Kong Manager desenvolvida pela comunidade). **Neste modo de operação o Kong precisa de um database associado**.
 
 Um ambiente db-less do Kong tem sua configuração totalmente declarativa, dispensando um banco de dados. Um caso particular de Kong db-less é o Kong Ingress Controller, cuja configuração é feita por objetos no Kubernetes (CRDs).
 
@@ -38,7 +38,7 @@ Para execução local na estação de trabalho este repositório possui diversos
 
 * Usando o `k3d` para subir um cluster kubernetes local e descartável.
 
-O k3d é um utilitário que permite simular um cluster multi-node dentro de um docker engine comum, permitindo trabalhar localmente com as ferramentas kubernetes.
+O k3d é um utilitário que permite simular um cluster multi-node dentro de um docker engine comum, permitindo trabalhar localmente com as ferramentas kubernetes. *Importante: estamos atualizando os exemplos para utilizarem o [`vkpr`](https://docs.vkpr.net/) para rodar o k3d com algumas configurações pré-definidas*.
 
 Para execução remota em um serviço de nuvem gratuito fornecemos neste repositório exemplos usando o `Okteto`.
 
@@ -69,7 +69,7 @@ Endpoints do Kong:
 
 ### Kong Gateway local (k3d) em modo "normal" (com database)
 
-Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para executar Kong Gateway localmente em cluster k3d, com database e em Free Mode. O Dev Portal funciona de forma limitada.
+Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para executar Kong Gateway localmente em cluster k3d, com database e em Free Mode. O Dev Portal não funciona em Free Mode.
 
 Veja em [KONG_EE_LOCAL_DB.md](KONG_EE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d, com database, RBAC e usando uma licença válida.
 
