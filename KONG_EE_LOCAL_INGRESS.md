@@ -8,6 +8,9 @@ O Kong for Kubernetes Enterprise é uma instalação do Kong Gateway restrita a 
 - [Configurar licença](#configurar-licença)
 - [Instalar Kong for Kubernetes Enterprise:](#instalar-kong-for-kubernetes-enterprise)
 - [Acessar aplicações:](#acessar-aplicações)
+- [Notas](#notas)
+  - [db-less](#db-less)
+  - [Ingress classes](#ingress-classes)
 - [Desinstalar Kong (opcional):](#desinstalar-kong-opcional)
 
 **Importante:** algumas instruções diferem quando a instalação é em "Free Mode" ou licenciada.
@@ -26,8 +29,6 @@ As seguintes ferramentas de linha de comando devem estar instaladas na estação
 ```
 127.0.0.1 portal.localhost api.portal.localhost manager.localhost api.manager.localhost kong.localhost registry.localhost
 ```
-
-Nota: estamos usando o k3d para subir um kubernetes local, mas outras alternativas como o minikube também devem funcionar. 
 
 ## Importar chart oficial do Kong:
 
@@ -81,6 +82,16 @@ helm upgrade -i kong -f values-ee-ingress.yaml kong/kong
   * http://localhost:9000/
 * Kong Manager:
   * http://manager.localhost:8000/
+
+## Notas
+
+### db-less
+
+Esta é uma instalação "db-less", portanto o Manager estará read-only (como esperado). Use CRDs para configurar o Kong.
+
+### Ingress classes
+
+O Traefik tem ingress class "nginx", enquanto a do Kong é "kong".
 
 ## Desinstalar Kong (opcional):
 

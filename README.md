@@ -69,7 +69,7 @@ Endpoints do Kong:
 
 ### Kong Gateway local (k3d) em modo "normal" (com database)
 
-Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para executar Kong Gateway localmente em cluster k3d, com database e em Free Mode. O Dev Portal não funciona em Free Mode.
+Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para executar Kong Gateway localmente em cluster k3d, com database e em Free Mode (Kong OSS + Kong Manager, mas sem Dev Portal). Um exemplo protegendo a administração com bacis-auth é fornecido.
 
 Veja em [KONG_EE_LOCAL_DB.md](KONG_EE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d, com database, RBAC e usando uma licença válida.
 

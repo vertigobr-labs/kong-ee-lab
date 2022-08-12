@@ -8,7 +8,7 @@
 
 image:
   repository: kong/kong-gateway
-  tag: "2.5.0.1"
+  tag: "2.8.1.3"
 env:
   database: postgres
   pg_host: "kong-postgresql"
@@ -105,11 +105,7 @@ status:
     enabled: false
 postgresql:
   enabled: true
-  # postgresqlPostgresPassword: kongadmin123
-  postgresqlDatabase: kong
-  postgresqlUsername: kong
-  postgresqlPassword: kong
-  service:
-    port: 5432
-  # persistence:
-  #   size: 2Gi
+  auth:
+    username: kong
+    password: kong
+    database: kong

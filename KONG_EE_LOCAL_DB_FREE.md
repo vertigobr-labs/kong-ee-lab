@@ -25,10 +25,8 @@ As seguintes ferramentas de linha de comando devem estar instaladas na estação
 **Importante:** este exemplo também assume que nomes "*.localhost" resolvem sempre para localhost. Se este não for o caso basta criar as entradas abaixo manualmente em /etc/hosts.
 
 ```
-127.0.0.1 portal.localhost api.portal.localhost manager.localhost api.manager.localhost kong.localhost registry.localhost
+127.0.0.1 manager.localhost registry.localhost
 ```
-
-Nota: estamos usando o k3d (via VKPR) para subir um kubernetes local, mas outras alternativas como o minikube também devem funcionar. 
 
 ## Importar chart oficial do Kong:
 
@@ -62,6 +60,8 @@ A instalação acima deixa ambos Manager e Admin API abertos (sem senha), o que 
 
 ```sh
 helm upgrade -i kong -f values-ee-db-freemode-basic-auth.yaml kong/kong
+# plugin e consumer para usuário/senha = teste/senha
+kubectl apply -f kic-freemode-auth
 ```
 
 ## Acessar aplicações:
@@ -71,7 +71,10 @@ helm upgrade -i kong -f values-ee-db-freemode-basic-auth.yaml kong/kong
 * Kong Manager:
   * http://manager.localhost:8000/
 
-Nota: em free mode o Dev Portal não está disponível.
+Notas: 
+
+1. Em free mode o Dev Portal não está disponível.
+2. O ingress controller é o próprio Kong
 
 ## Desinstalar Kong (opcional):
 
