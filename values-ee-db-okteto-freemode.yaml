@@ -2,7 +2,6 @@
 # Valores para deploymrnt do Kong Gateway no Okteto (free mode).
 #
 
-# kong dependent chart (i.e. subchart) values
 image:
   repository: kong/kong-gateway
   #tag: "2.8"
