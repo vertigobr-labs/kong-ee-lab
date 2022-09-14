@@ -1,16 +1,18 @@
 #
 # COMO USAR:
 #
-# export KONG_LICENSE_DATA='......'  # deixe vazia se for rodar em free mode
+# export KONG_LICENSE_DATA="..."  # deixe vazia se for rodar em free mode
 # docker-compose up -d kong-db
 # docker-compose up kong-init
 # docker-compose up kong
 #
 # KONG MANAGER: http://localhost:8002
 #
-# Importante: em free mode não existe o Dev Portal
+# Importante: 
+# - Se usar licença irá rodar em free mode, onde não existe o Dev Portal, RBAC etc.
+# - Se usar licença o login é kong_admin / vert1234 (KONG_PASSWORD)
 #
-version: "3"
+version: "2"
 
 services:
   kong-db:
@@ -22,9 +24,11 @@ services:
     volumes:
       - kongdb:/var/lib/postgresql
   kong-init:
-    image: kong/kong-gateway:2.5.0.1
+    image: kong/kong-gateway:3.0.0.0-alpine
     depends_on:
-      - kong-db
+      kong-db:
+        condition: service_started
+    restart: on-failure
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
@@ -34,10 +38,10 @@ services:
       KONG_LOG_LEVEL: debug
     command: kong migrations bootstrap
   kong:
-    image: kong/kong-gateway:2.5.0.1
+    image: kong/kong-gateway:3.0.0.0-alpine
     depends_on:
-      - kong-db
-      - kong-init
+      kong-init:
+        condition: service_completed_successfully
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
@@ -57,7 +61,7 @@ services:
       # RBAC SÓ FUNCIONA COM LICENÇA, SEM LICENÇA TEMOS FREE MODE
       # AS CONFIGS ABAIXO SÃO INÓCUAS EM FREE MODE
       KONG_ADMIN_GUI_AUTH: basic-auth
-      KONG_ADMIN_GUI_SESSION_CONF: "{\"cookie_name\":\"admin_session\",\"cookie_samesite\":\"off\",\"secret\":\"myadminsessionsecret\",\"cookie_secure\":false,\"storage\":\"kong\",\"cookie_domain\":\"localhost\"}"
+      KONG_ADMIN_GUI_SESSION_CONF: "{\"cookie_name\":\"admin_session\",\"cookie_samesite\":\"Strict\",\"secret\":\"myadminsessionsecret\",\"cookie_secure\":false,\"storage\":\"kong\",\"cookie_domain\":\"localhost\"}"
       KONG_ENFORCE_RBAC: "on"
       KONG_LOG_LEVEL: notice
       KONG_LICENSE_DATA: "${KONG_LICENSE_DATA}"
