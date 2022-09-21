@@ -57,16 +57,17 @@ admin:
     hostname: api.manager.localhost
     path: "/"
 proxy:
-  type: ClusterIP
+  type: NodePort
   http:
     enabled: true
+    nodePort: 30000
   tls:
     enabled: false
   ingress:
-    enabled: true
-    hosts:
-      - kong.localhost
-    path: "/"
+    enabled: false
+    # hosts:
+    #   - kong.localhost
+    # path: "/"
 manager:
   enabled: true
   http:
@@ -103,6 +104,9 @@ status:
     enabled: true
   tls:
     enabled: false
+
+# postgres common issues:
+# https://github.com/Kong/charts/blob/main/charts/kong/FAQs.md#kong-fails-to-start-after-helm-upgrade-when-postgres-is-used-what-do-i-do
 postgresql:
   enabled: true
   auth:

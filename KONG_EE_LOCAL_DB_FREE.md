@@ -20,7 +20,7 @@ As seguintes ferramentas de linha de comando devem estar instaladas na estação
 - Helm (*)
 - Kubectl (*)
 
-(*) já embutido no `vkpr` na pasta `~/.vkpr/bin`
+(*) já embutidos no `vkpr` na pasta `~/.vkpr/bin`
 
 **Importante:** este exemplo também assume que nomes "*.localhost" resolvem sempre para localhost. Se este não for o caso basta criar as entradas abaixo manualmente em /etc/hosts.
 
@@ -73,8 +73,8 @@ kubectl apply -f kic-freemode-auth
 
 Notas: 
 
-1. Em free mode o Dev Portal não está disponível.
-2. O ingress controller é o próprio Kong
+1. Em free mode o Dev Portal não está disponível, mas temos o Kong Manager;
+2. O ingress controller neste exemplo é o próprio Kong, portanto o Manager e a Admin API do Kong aparecem como serviços do próprio API Gateway.
 
 ## Desinstalar Kong (opcional):
 

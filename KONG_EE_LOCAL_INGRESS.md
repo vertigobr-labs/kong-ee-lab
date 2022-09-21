@@ -39,19 +39,11 @@ helm repo update
 
 ## Criar cluster k3d
 
-O comando k3d abaixo cria um cluster já com o Traefik Ingress Controller, o qual estará publicado em porta local arbitrária (8000) e atenderá a aplicações web "comuns", enquanto a porta 9000 está reservada para o Kong Ingress Controller: 
+O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Traefik Ingress Controller (porta 8000), mas também pronto para expor o Kong Ingress Controller em uma porta local arbitrária (9000). O Traefik atenderá a aplicações web "comuns", enquanto a porta 9000 está reservada para o tráfego de APIs. 
 
 ```sh
-# roda registry local e um mirror do Docker Hub
-./registry/start-registry.sh
-# roda um cluster k3d (vai suportar traefik e kong como ingress controllers)
-k3d cluster create kong-local \
-  -p "8000:80@loadbalancer" -p "9000:30080@agent[0]" --agents 1 \
-  --registry-use k3d-registry.localhost \
-  --registry-config ./registry/registries.yaml
-# usa este cluster
-kubectl config use-context k3d-kong-local
-kubectl cluster-info
+# roda um cluster k3d com traefik usando VKPR
+vkpr infra start --enable_traefik=true --nodeports=1
 ```
 
 ## Configurar licença

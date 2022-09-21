@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: cep-ingress
@@ -12,6 +12,9 @@ spec:
   - http:
       paths:
       - path: /cep
+        pathType: Prefix
         backend:
-          serviceName: cep
-          servicePort: 80
+          service:
+            name: cep
+            port:
+              number: 80

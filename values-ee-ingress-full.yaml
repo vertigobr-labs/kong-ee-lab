@@ -6,11 +6,11 @@
 
 image:
   repository: kong/kong-gateway
-  tag: "2.7.1.2"
+  tag: "3.0.0.0-alpine"
 env:
   database: postgres
-  pg_host: "postgres-postgresql.vkpr.svc"
-  #pg_host: "kong-postgresql"
+  #pg_host: "postgres-postgresql.vkpr.svc"
+  pg_host: "kong-postgresql"
   pg_user: kong
   pg_password: kong
   pg_database: kong
@@ -56,17 +56,10 @@ proxy:
   type: NodePort
   http:
     enabled: true
-    servicePort: 8000
-    containerPort: 8000
-    nodePort: 30080
-    parameters: []
+    nodePort: 30000
   tls:
     enabled: true
-    servicePort: 8443
-    containerPort: 8443
-    nodePort: 30081
-    parameters:
-    - http2
+    nodePort: 30001
   ingress:
     enabled: false
 admin:
@@ -119,15 +112,12 @@ status:
     enabled: true
   tls:
     enabled: false
+
+# postgres common issues:
+# https://github.com/Kong/charts/blob/main/charts/kong/FAQs.md#kong-fails-to-start-after-helm-upgrade-when-postgres-is-used-what-do-i-do
 postgresql:
-  enabled: false
-  # postgresqlPostgresPassword: kongadmin123
-  # postgresqlDatabase: kong
-  # postgresqlUsername: kong
-  # postgresqlPassword: kong
-  # service:
-  #   port: 5432
-  # volumePermissions:
-  #   enabled: true
-  # persistence:
-  #   size: 2Gi
+  enabled: true
+  auth:
+    username: kong
+    password: kong
+    database: kong
