@@ -1,0 +1,27 @@
+#
+# Valores para testes em k3d local.
+#
+
+# image:
+#   repository: kong
+#   tag: "3.2"
+env:
+  log_level: notice
+ingressController:
+  enabled: true
+enterprise:
+  enabled: false
+admin:
+  enabled: true
+  type: NodePort
+  http:
+    enabled: true
+    nodePort: 30000
+  tls:
+    enabled: false
+proxy:
+  type: LoadBalancer
+  http:
+    enabled: true
+  tls:
+    enabled: false

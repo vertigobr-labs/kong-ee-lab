@@ -9,6 +9,7 @@ Instruções para rodar Kong Gateway (Enterprise) usando o chart oficial da Kong
 - [Instruções de instalação - Docker (docker-compose)](#instruções-de-instalação---docker-docker-compose)
   - [Kong EE local em modo "normal"](#kong-ee-local-em-modo-normal)
 - [Instruções de instalação - Kubernetes (k3d)](#instruções-de-instalação---kubernetes-k3d)
+  - [Kong Gateway local (k3d) em modo "db-less" (ingress controller)](#kong-gateway-local-k3d-em-modo-db-less-ingress-controller)
   - [Kong Gateway local (k3d) em modo "normal" (com database)](#kong-gateway-local-k3d-em-modo-normal-com-database)
   - [Kong for Kubernetes Enterprise local (k3d) em modo "Ingress Controller" (db-less)](#kong-for-kubernetes-enterprise-local-k3d-em-modo-ingress-controller-db-less)
   - [Kong Gateway on Kubernetes local (k3d)](#kong-gateway-on-kubernetes-local-k3d)
@@ -66,6 +67,10 @@ Endpoints do Kong:
 * Kong Admin API: http://localhost:8001
 
 ## Instruções de instalação - Kubernetes (k3d)
+
+### Kong Gateway local (k3d) em modo "db-less" (ingress controller)
+
+Veja em [KONG_CE_LOCAL_DB.md](KONG_CE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d como ingress controller. Duas portas são expostas (8000 e 9000) para o Kong e sua Admin API, respectivamente.
 
 ### Kong Gateway local (k3d) em modo "normal" (com database)
 
