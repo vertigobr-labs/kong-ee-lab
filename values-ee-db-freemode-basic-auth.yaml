@@ -6,7 +6,7 @@
 
 image:
   repository: kong/kong-gateway
-  tag: "3.0.0.0-alpine"
+  tag: "3.4-debian"
 env:
   database: postgres
   pg_host: "kong-postgresql"
@@ -16,7 +16,8 @@ env:
   pg_port: 5432
   portal: off
   admin_gui_url: "http://manager.localhost:8000"
-  admin_api_uri: "http://manager.localhost:8000/api"
+  # 'admin_api_uri' configuration property is deprecated, use 'admin_gui_api_url' instead
+  admin_gui_api_url: "http://manager.localhost:8000/api"
   proxy_url: "http://localhost:8000"
   log_level: notice
 ingressController:
