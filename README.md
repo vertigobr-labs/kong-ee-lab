@@ -70,7 +70,7 @@ Endpoints do Kong:
 
 ### Kong Gateway local (k3d) em modo "db-less" (ingress controller)
 
-Veja em [KONG_CE_LOCAL_DB.md](KONG_CE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d como ingress controller. Duas portas são expostas (8000 e 9000) para o Kong e sua Admin API, respectivamente.
+Veja em [KONG_CE_LOCAL_DBLESS.md](KONG_CE_LOCAL_DBLESS.md) os passos para executar Kong Gateway localmente em cluster k3d como ingress controller. Duas portas são expostas (8000 e 9000) para o Kong e sua Admin API, respectivamente.
 
 ### Kong Gateway local (k3d) em modo "normal" (com database)
 

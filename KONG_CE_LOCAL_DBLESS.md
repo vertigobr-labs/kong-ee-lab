@@ -7,6 +7,7 @@ Passos para executar Kong CE localmente (usando o VKPR para subir um cluster k3d
 - [Criar cluster k3d](#criar-cluster-k3d)
 - [Instalar Kong CE:](#instalar-kong-ce)
 - [Acessar aplicações:](#acessar-aplicações)
+- [Exemplos:](#exemplos)
 - [Desinstalar Kong (opcional):](#desinstalar-kong-opcional)
 
 ## Pré-requisitos
@@ -32,11 +33,11 @@ helm repo update
 
 ## Criar cluster k3d
 
-O VKPR cria um cluster Kubernetes (k3d), o qual já está pronto para expor o Kong e sua Admin API em portas locais arbitrária (8000 e 9000 respectivamente): 
+O VKPR cria um cluster Kubernetes (k3d), o qual já está pronto para expor o Kong Gateway, sua Admin API e Admin UI (Manager) em portas locais arbitrária (8000, 9000 e 9001 respectivamente): 
 
 ```sh
 # roda um cluster k3d usando VKPR
-vkpr infra start --nodeports=1
+vkpr infra start --nodeports=2
 ```
 
 ## Instalar Kong CE:
@@ -53,6 +54,19 @@ helm upgrade -i kong -f values-dbless.yaml kong/kong
   * http://localhost:8000/ 
 * Kong Admin API:
   * http://localhost:9000/ 
+* Kong Admin UI (Manager):
+  * http://localhost:9001/ 
+
+## Exemplos:
+
+```sh
+curl -s localhost:8000
+
+{
+  "message": "no Route matched with those values",
+  "request_id": "1579e7419a81ef1628ceee1431e26810"
+}
+```
 
 ## Desinstalar Kong (opcional):
 

@@ -2,13 +2,19 @@
 # Valores para testes em k3d local.
 #
 
-# image:
-#   repository: kong
-#   tag: "3.2"
+image:
+  repository: kong
+  tag: "3.5"
 env:
-  log_level: notice
+  admin_gui_api_url: "http://localhost:9001"
+  admin_gui_url: "http://localhost:9000"
+  proxy_url: "http://localhost:8000"
+  log_level: debug
 ingressController:
   enabled: true
+  # image:
+  #   repository: kong/kubernetes-ingress-controller
+  #   tag: "3.0"
 enterprise:
   enabled: false
 admin:
@@ -16,12 +22,21 @@ admin:
   type: NodePort
   http:
     enabled: true
-    nodePort: 30000
+    nodePort: 30000 # vkpr nodeport exposed as 9000
   tls:
     enabled: false
 proxy:
-  type: LoadBalancer
+  type: LoadBalancer # vkpr LB
   http:
     enabled: true
+  tls:
+    enabled: false
+manager:
+  # Enable creating a Kubernetes service for Kong Manager
+  enabled: true
+  type: NodePort
+  http:
+    enabled: true
+    nodePort: 30001 # vkpr nodeport exposed as 9001
   tls:
     enabled: false
