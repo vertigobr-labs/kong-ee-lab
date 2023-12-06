@@ -3,33 +3,43 @@
 Instruções para rodar Kong Gateway (Enterprise) usando o chart oficial da Kong, tanto em ambiente local (via docker-compose ou k3d) quanto em ambiente remoto (via Okteto), tanto nos modos "normal" quanto "db-less" (Ingress Controller).
 
 - [Definições](#definições)
-  - [Kong Gateway OSS vs Kong Gateway (Free Mode) vs Kong Gateway (Enterprise)](#kong-gateway-oss-vs-kong-gateway-free-mode-vs-kong-gateway-enterprise)
-  - [Kong "normal" vs Kong db-less vs Kong Ingress Controller](#kong-normal-vs-kong-db-less-vs-kong-ingress-controller)
+  - [Kong Gateway vs Kong Gateway Enterprise (Free Mode) vs Kong Gateway Enterprise](#kong-gateway-vs-kong-gateway-enterprise-free-mode-vs-kong-gateway-enterprise)
+  - [Kong "tradicional" vs Kong db-less vs Kong Ingress Controller](#kong-tradicional-vs-kong-db-less-vs-kong-ingress-controller)
+  - [Kong no Kubernetes](#kong-no-kubernetes)
   - [Execução local vs Execução remota (Okteto)](#execução-local-vs-execução-remota-okteto)
 - [Instruções de instalação - Docker (docker-compose)](#instruções-de-instalação---docker-docker-compose)
   - [Kong EE local em modo "normal"](#kong-ee-local-em-modo-normal)
-- [Instruções de instalação - Kubernetes (k3d)](#instruções-de-instalação---kubernetes-k3d)
-  - [Kong Gateway local (k3d) em modo "db-less" (ingress controller)](#kong-gateway-local-k3d-em-modo-db-less-ingress-controller)
-  - [Kong Gateway local (k3d) em modo "normal" (com database)](#kong-gateway-local-k3d-em-modo-normal-com-database)
-  - [Kong for Kubernetes Enterprise local (k3d) em modo "Ingress Controller" (db-less)](#kong-for-kubernetes-enterprise-local-k3d-em-modo-ingress-controller-db-less)
+- [Instruções de instalação - Kubernetes (k3d / vkpr)](#instruções-de-instalação---kubernetes-k3d--vkpr)
+  - [Kong Gateway (OSS) local (k3d) em modo "db-less" (ingress controller)](#kong-gateway-oss-local-k3d-em-modo-db-less-ingress-controller)
+  - [Kong Gateway Enterprise local (k3d) em modo "normal" (com database)](#kong-gateway-enterprise-local-k3d-em-modo-normal-com-database)
+  - [Kong Gateway Enterprise local (k3d) em modo "Ingress Controller" (db-less)](#kong-gateway-enterprise-local-k3d-em-modo-ingress-controller-db-less)
   - [Kong Gateway on Kubernetes local (k3d)](#kong-gateway-on-kubernetes-local-k3d)
   - [Kong Gateway em cluster Okteto](#kong-gateway-em-cluster-okteto)
 
 ## Definições
 
-### Kong Gateway OSS vs Kong Gateway (Free Mode) vs Kong Gateway (Enterprise)
+### Kong Gateway vs Kong Gateway Enterprise (Free Mode) vs Kong Gateway Enterprise
 
-O Kong Gateway (antigo "Enterprise") pode ser executado em "Free Mode" (i.e. sem licenciamento) ou em modo "Enterprise" (com licenciamento), bastando fornecer um arquivo de licença válido. Confira [as diferenças entre Free Mode e Enterprise](https://docs.konghq.com/gateway/latest/plan-and-deploy/licenses/).
+O Kong Gateway Enterprise pode ser executado em "Free Mode" (i.e. sem licenciamento) ou em modo "full" (com licenciamento), bastando fornecer um arquivo de licença válido. Confira [as diferenças entre Free Mode e Enterprise](https://docs.konghq.com/gateway/latest/plan-and-deploy/licenses/).
 
-Tipicamente no Kong Gateway em "Free Mode" o Kong Manager está disponível (embora sem autenticação), mas todos os demais componentes do Kong Gateway (Dev Portal, Vitals etc.) não funcionam. Em "Free Mode" não há RBAC e isto afeta diversas funcionalidades, mas a presença da UI do Manager é de grande ajuda.
+Tipicamente no Kong Gateway Enterprise em "Free Mode" o Kong Manager está disponível (embora sem autenticação), mas todos os demais componentes licenciados do Kong Gateway (como os plugins Enterprise) não funcionam. Em "Free Mode" não há RBAC e isto afeta diversas funcionalidades, mas a presença da UI do Manager é de grande ajuda.
 
-Já o Kong Gateway OSS não possui nenhum elemento de interface gráfica, podendo contudo ser administrado via Admin API ou por produtos de terceiros que a utilizem (como o Konga).
+Já o Kong Gateway (open-source), a partir da versão 3.5, também possui uma interface gráfica. Portanto a administração feita via Admin API ou por produtos de terceiros (como o Konga) não é mais necessária.
 
-### Kong "normal" vs Kong db-less vs Kong Ingress Controller
+### Kong "tradicional" vs Kong db-less vs Kong Ingress Controller
 
-Um ambiente "normal" do Kong permite sua configuração via Admin API. A Admin API é, na verdade, o backend utilizado tanto pelo Kong Manager quanto pelo Konga (alternativa ao Kong Manager desenvolvida pela comunidade). **Neste modo de operação o Kong precisa de um database associado**.
+Um ambiente "tradicional" do Kong permite sua configuração via Admin API. A Admin API é, na verdade, o backend utilizado tanto pelo Kong Manager quanto pelo Konga (alternativa ao Kong Manager desenvolvida pela comunidade). **Neste modo de operação o Kong precisa de um database associado**.
 
 Um ambiente db-less do Kong tem sua configuração totalmente declarativa, dispensando um banco de dados. Um caso particular de Kong db-less é o Kong Ingress Controller, cuja configuração é feita por objetos no Kubernetes (CRDs).
+
+### Kong no Kubernetes
+
+No Kubernetes há [duas opções principais](https://docs.konghq.com/gateway/latest/install/kubernetes/deployment-options/) de executar o Kong Gateway:
+
+- Modo db-less como Ingress Controller (como já mencionamos)
+- Modo tradicional (com database) com ou sem o Ingress Controller
+
+O Kong suporta ainda várias outras topologias que não iremos explorar aqui (como modo Híbrido ou subordinado ao Kong Konnect).
 
 ### Execução local vs Execução remota (Okteto)
 
@@ -66,21 +76,21 @@ Endpoints do Kong:
 * Kong Manager (admin UI): http://localhost:8002
 * Kong Admin API: http://localhost:8001
 
-## Instruções de instalação - Kubernetes (k3d)
+## Instruções de instalação - Kubernetes (k3d / vkpr)
 
-### Kong Gateway local (k3d) em modo "db-less" (ingress controller)
+### Kong Gateway (OSS) local (k3d) em modo "db-less" (ingress controller)
 
 Veja em [KONG_CE_LOCAL_DBLESS.md](KONG_CE_LOCAL_DBLESS.md) os passos para executar Kong Gateway localmente em cluster k3d como ingress controller. Três portas são expostas (8000, 9000 e 9001) para o Kong e sua Admin API e GUI, respectivamente.
 
-### Kong Gateway local (k3d) em modo "normal" (com database)
+### Kong Gateway Enterprise local (k3d) em modo "normal" (com database)
 
-Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para executar Kong Gateway localmente em cluster k3d, com database e em Free Mode (Kong OSS + Kong Manager, mas sem Dev Portal). Um exemplo adicional protegendo a administração com basic-auth é fornecido.
+Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para executar Kong Gateway localmente em cluster k3d, com database e em Free Mode (Kong OSS + Kong Manager). Um exemplo adicional protegendo a administração com basic-auth é fornecido.
 
 Veja em [KONG_EE_LOCAL_DB.md](KONG_EE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d, com database, RBAC e usando uma licença válida.
 
-### Kong for Kubernetes Enterprise local (k3d) em modo "Ingress Controller" (db-less)
+### Kong Gateway Enterprise local (k3d) em modo "Ingress Controller" (db-less)
 
-O Kong for Kubernetes Enterprise é uma instalação do Kong Gateway restrita ao Kong Ingress Controller (db-less) e seus plugins Enterprise. A configuração do Kong é feita por CRDs no Kubernetes e a Admin API é read-only, mas sendo uma instalação db-less alguns plugins podem não funcionar.
+O Kong Gateway restrito ao modo Ingress Controller (db-less) suporta a ampla maioria dos plugins Enterprise (exceto aquele incompatíveis com "db-less"). A configuração do Kong é feita por CRDs no Kubernetes e a Admin API é read-only, mas o Admin UI (Manager) serve para estudar a configuração resultante dos CRDs.
 
 Veja em [KONG_EE_LOCAL_INGRESS.md](KONG_EE_LOCAL_INGRESS.md) os passos para executar o Kong for Kubernetes Enterprise localmente.
 

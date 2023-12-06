@@ -44,7 +44,7 @@ O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Tra
 vkpr infra start --enable_traefik=true --nodeports=1
 ```
 
-Este exemplo também habilita o Kong Ingress Controller. O Traefik é o ingress controller "default" do cluster e o Kong proxy estará disponível em uma porta dedicada (9000) para tráfego exclusivo de APIs.
+Este exemplo também habilita o Kong Ingress Controller. O Traefik é o ingress controller "default" do cluster e o Kong proxy estará disponível em uma porta dedicada (9000) para tráfego exclusivo de APIs. Esta separação apenas demonstra que é possível ter os endpoints de administração do Kong separados do endpoint do próprio API Gateway.
 
 ## Configurar licença e secrets
 
@@ -74,9 +74,9 @@ helm upgrade -i kong -f values-ee-db-licensed.yaml kong/kong
 * Kong Gateway (onde ficam suas APIs):
   * http://localhost:9000/
 * Kong Manager:
-  * http://manager.localhost:8000/
-* Kong Developer Portal:
-  * http://portal.localhost:8000/
+  * http://manager.localhost:8000/manager
+* Kong Admin API:
+  * http://manager.localhost:8000
 
 ## Desinstalar Kong (opcional):
 

@@ -1,4 +1,4 @@
-# Kong for Kubernetes Enterprise (k3d) - Ingress Controller <!-- omit in toc -->
+# Kong Gateway Enterprise em modo "Ingress Controller" <!-- omit in toc -->
 
 O Kong for Kubernetes Enterprise é uma instalação do Kong Gateway restrita a **apenas o Kong Ingress Controller (db-less) e seus plugins Enterprise**. Passos para executar Kong for Kubernetes Enterprise localmente em um cluster k3d:
 
@@ -20,14 +20,17 @@ O Kong for Kubernetes Enterprise é uma instalação do Kong Gateway restrita a 
 As seguintes ferramentas de linha de comando devem estar instaladas na estação de trabalho:
 
 - Docker Desktop (OSX/Windows) ou Docker CE (Linux)
-- k3d
-- Helm
-- Kubectl
+- VKPR
+- k3d (*)
+- Helm (*)
+- Kubectl (*)
+
+(*) já embutido no `vkpr` na pasta `~/.vkpr/bin`
 
 **Importante:** este exemplo também assume que nomes "*.localhost" resolvem sempre para localhost. Se este não for o caso basta criar as entradas abaixo manualmente em /etc/hosts.
 
 ```
-127.0.0.1 portal.localhost api.portal.localhost manager.localhost api.manager.localhost kong.localhost registry.localhost
+127.0.0.1 manager.localhost registry.localhost
 ```
 
 ## Importar chart oficial do Kong:
@@ -73,13 +76,15 @@ helm upgrade -i kong -f values-ee-ingress.yaml kong/kong
 * Kong Gateway (onde ficam suas APIs):
   * http://localhost:9000/
 * Kong Manager:
-  * http://manager.localhost:8000/
+  * http://manager.localhost:8000/manager
+* Kong Admin API (read-only):
+  * http://manager.localhost:8000
 
 ## Notas
 
 ### db-less
 
-Esta é uma instalação "db-less", portanto o Manager estará read-only (como esperado). Use CRDs para configurar o Kong.
+Esta é uma instalação "db-less", portanto o Manager e Admin API estarão read-only (como esperado). Use CRDs para configurar o Kong.
 
 ### Ingress classes
 

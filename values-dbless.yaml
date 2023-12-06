@@ -6,8 +6,8 @@ image:
   repository: kong
   tag: "3.5"
 env:
-  admin_gui_api_url: "http://localhost:9001"
-  admin_gui_url: "http://localhost:9000"
+  admin_gui_api_url: "http://localhost:9000"
+  admin_gui_url: "http://localhost:9001"
   proxy_url: "http://localhost:8000"
   log_level: debug
 ingressController:
