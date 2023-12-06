@@ -59,12 +59,30 @@ helm upgrade -i kong -f values-dbless.yaml kong/kong
 
 ## Exemplos:
 
+Testar o endpoint do API gateway (proxy):
+
 ```sh
 curl -s localhost:8000
 
 {
   "message": "no Route matched with those values",
   "request_id": "1579e7419a81ef1628ceee1431e26810"
+}
+```
+
+Testar o endpoint da Ad,min API:
+
+```sh
+curl -s localhost:9000/status | jq ".server"
+
+{
+  "connections_waiting": 1,
+  "total_requests": 83,
+  "connections_active": 4,
+  "connections_handled": 46,
+  "connections_reading": 0,
+  "connections_accepted": 46,
+  "connections_writing": 3
 }
 ```
 
