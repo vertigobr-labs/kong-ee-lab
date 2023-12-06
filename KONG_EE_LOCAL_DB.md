@@ -9,7 +9,6 @@ Passos para executar Kong Gateway localmente em um cluster k3d e em modo "normal
 - [Instalar Kong Gateway:](#instalar-kong-gateway)
 - [Acessar aplicações:](#acessar-aplicações)
 - [Desinstalar Kong (opcional):](#desinstalar-kong-opcional)
-- [Notas adicionais](#notas-adicionais)
 
 ## Pré-requisitos
 
@@ -88,18 +87,4 @@ helm delete kong
 # se quiser zerar o banco e secrets
 kubectl delete pvc data-kong-postgresql-0
 kubectl delete secrets kong-enterprise-license kong-enterprise-superuser-password kong-session-config
-```
-
-## Notas adicionais
-
-Nota: estamos usando admin_gui e admin_gui_api no mesmo hostname. Se forem diferentes, usar a cfg de cookies abaixo.
-
-A configuração "cookie_samesite=Strict" funciona quando manager e admin API estão no mesmo domain ("manager.localhost" e "api.manager.localhost" em nosso caso). O mesmo vale para o Dev Portal ("portal.localhost" e "api.portal.localhost"). Se os domains forem diferentes então use "cookie_samesite=off".
-
-```sh
-echo '{"cookie_name":"admin_session","cookie_samesite":"Strict","secret":"'$ADMIN_COOKIE_SECRET'","cookie_secure":false,"storage":"kong","cookie_domain":"manager.localhost"}' > admin_gui_session_conf
-echo '{"cookie_name":"portal_session","cookie_samesite":"Strict","secret":"'$SESSION_COOKIE_SECRET'","cookie_secure":false,"storage":"kong","cookie_domain":"portal.localhost"}' > portal_session_conf
-kubectl create secret generic kong-session-config \
-  --from-file=admin_gui_session_conf=admin_gui_session_conf \
-  --from-file=portal_session_conf=portal_session_conf
 ```
