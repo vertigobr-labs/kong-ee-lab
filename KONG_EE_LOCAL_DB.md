@@ -45,7 +45,7 @@ O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Tra
 vkpr infra start --enable_traefik=true --nodeports=1
 ```
 
-Este exemplo não habilita o Kong Ingress Controller. O Traefik é o ingress controller do cluster e o Kong proxy estará disponível em uma porta dedicada (9000) para tráfego exclusivo de APIs.
+Este exemplo também habilita o Kong Ingress Controller. O Traefik é o ingress controller "default" do cluster e o Kong proxy estará disponível em uma porta dedicada (9000) para tráfego exclusivo de APIs.
 
 ## Configurar licença e secrets
 
