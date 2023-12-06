@@ -8,7 +8,7 @@
 
 image:
   repository: kong/kong-gateway
-  tag: "3.0.0.0-alpine"
+  tag: "3.5"
 env:
   database: postgres
   pg_host: "kong-postgresql"
@@ -16,29 +16,31 @@ env:
   pg_password: kong
   pg_database: kong
   pg_port: 5432
-  portal: on
-  portal_auth: "basic-auth"
-  portal_auto_approve: on
-  admin_gui_url: "http://manager.localhost:8000"
-  admin_api_uri: "http://api.manager.localhost:8000"
-  portal_gui_host: "portal.localhost:8000"
-  proxy_url: "http://kong.localhost:8000"
-  portal_api_url: "http://api.portal.localhost:8000"
-  portal_gui_protocol: "http"
+  portal: off # nao existe mais
+  #portal_auth: "basic-auth"
+  #portal_auto_approve: on
+  admin_gui_url: "http://manager.localhost:8000/manager"
+  admin_gui_path: "/manager"
+  admin_gui_api_url: "http://manager.localhost:8000"
+  #portal_gui_host: "portal.localhost:8000"
+  proxy_url: "http://localhost:9000"
+  #portal_api_url: "http://api.portal.localhost:8000"
+  #portal_gui_protocol: "http"
   log_level: notice
   password:
     valueFrom:
       secretKeyRef:
         name: kong-enterprise-superuser-password
         key: password
-  portal_session_conf:
-    valueFrom:
-      secretKeyRef:
-        name: kong-session-config
-        key: portal_session_conf
 ingressController:
-  enabled: false
+  enabled: true
   installCRDs: false
+  env:
+    kong_admin_token:
+      valueFrom:
+        secretKeyRef:
+          name: kong-enterprise-superuser-password
+          key: password
 enterprise:
   enabled: true
   license_secret: kong-enterprise-license
@@ -54,7 +56,7 @@ admin:
     enabled: false
   ingress:
     enabled: true
-    hostname: api.manager.localhost
+    hostname: manager.localhost
     path: "/"
 proxy:
   type: NodePort
@@ -77,27 +79,13 @@ manager:
   ingress:
     enabled: true
     hostname: manager.localhost
-    path: "/"
+    path: "/manager"
+# portal e portalapi nao existem mais
 portal:
-  enabled: true
-  http:
-    enabled: true
-  tls:
-    enabled: false
-  ingress:
-    enabled: true
-    hostname: portal.localhost
-    path: "/"
+  enabled: false
 portalapi:
-  enabled: true
-  http:
-    enabled: true
-  tls:
-    enabled: false
-  ingress:
-    enabled: true
-    hostname: api.portal.localhost
-    path: "/"
+  enabled: false
+# status
 status:
   enabled: true
   http:

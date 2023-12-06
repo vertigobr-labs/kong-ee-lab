@@ -26,7 +26,7 @@ As seguintes ferramentas de linha de comando devem estar instaladas na estação
 **Importante:** este exemplo também assume que nomes "*.localhost" resolvem sempre para localhost. Se este não for o caso basta criar as entradas abaixo manualmente em /etc/hosts.
 
 ```
-127.0.0.1 portal.localhost api.portal.localhost manager.localhost api.manager.localhost kong.localhost registry.localhost
+127.0.0.1 manager.localhost registry.localhost
 ```
 
 ## Importar chart oficial do Kong:
@@ -45,7 +45,7 @@ O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Tra
 vkpr infra start --enable_traefik=true --nodeports=1
 ```
 
-Este exemplo não habilita o Kong Ingress Controller. O Traefik é o ingress controller do cluster e o Kong proxy estará disponível em uma porta dedicada (9000).
+Este exemplo não habilita o Kong Ingress Controller. O Traefik é o ingress controller do cluster e o Kong proxy estará disponível em uma porta dedicada (9000) para tráfego exclusivo de APIs.
 
 ## Configurar licença e secrets
 
@@ -54,14 +54,11 @@ Para utilizar uma licença válida (ex: arquivo `license.json`) use a forma abai
 ```sh
 kubectl create secret generic kong-enterprise-license --from-file=license=./license.json
 export ADMIN_COOKIE_SECRET=$(pwgen 15 1)   # ou qualquer string desejada
-export SESSION_COOKIE_SECRET=$(pwgen 15 1) # ou qualquer string desejada
 export KONGPWD=$(pwgen 15 1)               # senha superadmin do Kong
 kubectl create secret generic kong-enterprise-superuser-password --from-literal=password=$KONGPWD
-echo '{"cookie_name":"admin_session","cookie_samesite":"Strict","secret":"'$ADMIN_COOKIE_SECRET'","cookie_secure":false,"storage":"kong","cookie_domain":"manager.localhost"}' > admin_gui_session_conf
-echo '{"cookie_name":"portal_session","cookie_samesite":"Strict","secret":"'$SESSION_COOKIE_SECRET'","cookie_secure":false,"storage":"kong","cookie_domain":"portal.localhost"}' > portal_session_conf
+echo '{"cookie_name":"admin_session","cookie_samesite":"Strict","secret":"'$ADMIN_COOKIE_SECRET'","cookie_secure":false,"storage":"kong"}' > admin_gui_session_conf
 kubectl create secret generic kong-session-config \
-  --from-file=admin_gui_session_conf=admin_gui_session_conf \
-  --from-file=portal_session_conf=portal_session_conf
+  --from-file=admin_gui_session_conf=admin_gui_session_conf
 echo "kong_admin password: $KONGPWD"
 ```
 
@@ -95,4 +92,14 @@ kubectl delete secrets kong-enterprise-license kong-enterprise-superuser-passwor
 
 ## Notas adicionais
 
+Nota: estamos usando admin_gui e admin_gui_api no mesmo hostname. Se forem diferentes, usar a cfg de cookies abaixo.
+
 A configuração "cookie_samesite=Strict" funciona quando manager e admin API estão no mesmo domain ("manager.localhost" e "api.manager.localhost" em nosso caso). O mesmo vale para o Dev Portal ("portal.localhost" e "api.portal.localhost"). Se os domains forem diferentes então use "cookie_samesite=off".
+
+```sh
+echo '{"cookie_name":"admin_session","cookie_samesite":"Strict","secret":"'$ADMIN_COOKIE_SECRET'","cookie_secure":false,"storage":"kong","cookie_domain":"manager.localhost"}' > admin_gui_session_conf
+echo '{"cookie_name":"portal_session","cookie_samesite":"Strict","secret":"'$SESSION_COOKIE_SECRET'","cookie_secure":false,"storage":"kong","cookie_domain":"portal.localhost"}' > portal_session_conf
+kubectl create secret generic kong-session-config \
+  --from-file=admin_gui_session_conf=admin_gui_session_conf \
+  --from-file=portal_session_conf=portal_session_conf
+```
