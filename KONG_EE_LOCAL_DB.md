@@ -8,7 +8,9 @@ Passos para executar Kong Gateway localmente em um cluster k3d e em modo "normal
 - [Configurar licença e secrets](#configurar-licença-e-secrets)
 - [Instalar Kong Gateway:](#instalar-kong-gateway)
 - [Acessar aplicações:](#acessar-aplicações)
+- [Configurar o Kong no Kubernetes com CRDs](#configurar-o-kong-no-kubernetes-com-crds)
 - [Desinstalar Kong (opcional):](#desinstalar-kong-opcional)
+- [Observações](#observações)
 
 ## Pré-requisitos
 
@@ -78,6 +80,19 @@ helm upgrade -i kong -f values-ee-db-licensed.yaml kong/kong
 * Kong Admin API:
   * http://manager.localhost:8000
 
+## Configurar o Kong no Kubernetes com CRDs
+
+O Kong Enterprise on Kubernetes pode ser configurado tanto pelo Kong Manager quanto pelos objetos (CRDs) e annotations do Kubernetes. 
+
+Este exemplo define serviço e rota no Kong Gateway pelo simples deployment de um Service e de um Ingress:
+
+```sh
+# cria serviço e rota no Kong via CRDs
+kubectl apply -f kic/
+# testa o serviço
+curl http://localhost:9000/cep/20020080/json
+```
+
 ## Desinstalar Kong (opcional):
 
 Remover Kong EE:
@@ -88,3 +103,7 @@ helm delete kong
 kubectl delete pvc data-kong-postgresql-0
 kubectl delete secrets kong-enterprise-license kong-enterprise-superuser-password kong-session-config
 ```
+
+## Observações
+
+Esta é a instalação mais completa do Kong para os testes mais comuns.

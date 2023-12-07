@@ -86,21 +86,21 @@ Veja em [KONG_CE_LOCAL_DBLESS.md](KONG_CE_LOCAL_DBLESS.md) os passos para execut
 
 Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para executar Kong Gateway localmente em cluster k3d, com database e em Free Mode (Kong OSS + Kong Manager). Um exemplo adicional protegendo a administração com basic-auth é fornecido.
 
-Veja em [KONG_EE_LOCAL_DB.md](KONG_EE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d, com database, RBAC e usando uma licença válida.
+Veja em [KONG_EE_LOCAL_DB.md](KONG_EE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d, com database, RBAC, Ingress Controller e usando uma licença válida. Com RBAC habilitado o Kong Manager exige autenticação (usuário "kong_admin"). Um exemplo adicional com a configuração de uma API via CRDs de Kubernetes é utilizado.
 
 ### Kong Gateway Enterprise local (k3d) em modo "Ingress Controller" (db-less)
 
 O Kong Gateway restrito ao modo Ingress Controller (db-less) suporta a ampla maioria dos plugins Enterprise (exceto aquele incompatíveis com "db-less"). A configuração do Kong é feita por CRDs no Kubernetes e a Admin API é read-only, mas o Admin UI (Manager) serve para estudar a configuração resultante dos CRDs.
 
-Veja em [KONG_EE_LOCAL_INGRESS.md](KONG_EE_LOCAL_INGRESS.md) os passos para executar o Kong for Kubernetes Enterprise localmente.
+Veja em [KONG_EE_LOCAL_INGRESS.md](KONG_EE_LOCAL_INGRESS.md) os passos para executar o Kong em modo Ingress Controller (db-less) localmente.
 
 ### Kong Gateway on Kubernetes local (k3d)
 
-O Kong Enterprise on Kubernetes é uma instalação "plena" do Kong Gateway que também faz uso do Kong Ingress Controller. Isto significa que plugins que exigem bancos de dados irão funcionar mesmo usando o Kong Ingress Controller.
+O Kong Gateway Enterprise no Kubernetes é uma instalação "plena" do Kong Gateway que também faz uso do Kong Ingress Controller. Isto significa que configurações podem ser feitas pela UI ou via CRDs.
 
-Veja em [KONG_EE_LOCAL_INGRESS_FULL.md](KONG_EE_LOCAL_INGRESS_FULL.md) os passos para executar o Kong Enterprise on Kubernetes localmente.
+Topologias mais elaboradas podem separar control plane e data plane do Kong.
 
-Veja em [KONG_EE_LOCAL_INGRESS_FULL_DISTRIBUTED.md](KONG_EE_LOCAL_INGRESS_FULL_DISTRIBUTED.md) os passos para executar o Kong Enterprise on Kubernetes localmente e distribuído em vários nós, separando *control plane* e *data plane*.
+Veja em [KONG_EE_LOCAL_INGRESS_FULL_DISTRIBUTED.md](KONG_EE_LOCAL_INGRESS_FULL_DISTRIBUTED.md) os passos para executar o Kong Enterprise on Kubernetes localmente (simulando distribuição em vários nós), separando *control plane* e *data planes*.
 
 ### Kong Gateway em cluster Okteto
 

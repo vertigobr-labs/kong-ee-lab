@@ -5,53 +5,30 @@
 #
 
 image:
-  repository: kong-docker-kong-gateway-docker.bintray.io/kong-enterprise-edition
-  tag: "2.3.2.0-alpine"
+  repository: kong/kong-gateway
+  tag: "3.5"
 env:
-  database: postgres
-  pg_host: "kong-postgresql"
-  pg_user: kong
-  pg_password: kong
-  pg_database: kong
-  pg_port: 5432
-  portal: "off"
-  # admin_listen off = data plane
-  admin_listen: "off"
-  # admin_gui_url: "http://kong-kong-manager:8002"
-  # admin_api_uri: "http://kong-kong-admin:8001"
-  # proxy_url: "http://kong.localhost:9000"
-  log_level: notice
-  password:
-    valueFrom:
-      secretKeyRef:
-        name: kong-enterprise-superuser-password
-        key: password
+  role: data_plane
+  cluster_dp_labels: "environment:dev"
+  cluster_control_plane: kong-kong-cluster.kong-cp.svc.cluster.local:8005
+  cluster_telemetry_endpoint: kong-kong-clustertelemetry.kong-cp.svc.cluster.local:8006
+  lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+secretVolumes:
+- kong-cluster-cert
 ingressController:
-  enabled: true
+  enabled: false
   installCRDs: false
-  env:
-    kong_admin_url: http://kong-kong-admin:8001
-    kong_admin_token:
-      valueFrom:
-        secretKeyRef:
-          name: kong-enterprise-superuser-password
-          key: password
 enterprise:
   enabled: true
   license_secret: kong-enterprise-license
-  rbac:
-    enabled: true
-    admin_gui_auth: basic-auth
-    session_conf_secret: kong-session-config
 proxy:
   enabled: true
   type: NodePort
   http:
     enabled: true
-    servicePort: 8000
-    containerPort: 8000
-    nodePort: 30080
-    parameters: []
+    nodePort: 30000
   tls:
     enabled: false
   ingress:
@@ -64,11 +41,5 @@ portal:
   enabled: false
 portalapi:
   enabled: false
-status:
-  enabled: true
-  http:
-    enabled: true
-  tls:
-    enabled: false
 postgresql:
   enabled: false # cp já tem

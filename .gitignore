@@ -8,3 +8,4 @@ admin_gui_auth_conf
 figlet.yaml
 *.pem
 registry/
+certs/
