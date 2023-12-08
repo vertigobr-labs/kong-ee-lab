@@ -69,7 +69,9 @@ kubectl apply -f kic-freemode-auth
 * Kong Gateway (onde ficam suas APIs):
   * http://localhost:8000/
 * Kong Manager:
-  * http://manager.localhost:8000/
+  * http://manager.localhost:8000/manager
+* Kong Admin API:
+  * http://manager.localhost:8000
 
 Notas: 
 
