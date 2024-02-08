@@ -10,8 +10,8 @@ image:
 env:
   role: data_plane
   cluster_dp_labels: "environment:dev"
-  cluster_control_plane: kong-kong-cluster.kong-cp.svc.cluster.local:8005
-  cluster_telemetry_endpoint: kong-kong-clustertelemetry.kong-cp.svc.cluster.local:8006
+  cluster_control_plane: host.k3d.internal:30005
+  cluster_telemetry_endpoint: host.k3d.internal:30006
   lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
@@ -25,14 +25,15 @@ enterprise:
   license_secret: kong-enterprise-license
 proxy:
   enabled: true
-  type: NodePort
+  type: LoadBalancer
   http:
     enabled: true
-    nodePort: 30000
   tls:
-    enabled: false
+    enabled: true
   ingress:
     enabled: false
+clustertelemetry:
+  enabled: false
 admin:
   enabled: false
 manager:

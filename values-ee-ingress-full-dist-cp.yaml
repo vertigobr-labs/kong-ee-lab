@@ -9,23 +9,21 @@ image:
   tag: "3.5"
 secretVolumes:
 - kong-cluster-cert
-deployment:
-  namespace: kong-cp
 env:
   role: control_plane
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
   database: postgres
-  pg_host: "kong-postgresql.kong-cp.svc"
+  pg_host: "kong-postgresql"
   pg_user: kong
   pg_password: kong
   pg_database: kong
   pg_port: 5432
   portal: off # nao existe mais
-  admin_gui_url: "http://manager.localhost:8000/manager"
-  admin_gui_path: "/manager"
-  admin_gui_api_url: "http://manager.localhost:8000"
-  proxy_url: "http://localhost:9000"
+  admin_gui_url: "http://localhost:30002"
+  admin_gui_path: "/"
+  admin_gui_api_url: "http://localhost:30001"
+  proxy_url: "http://localhost:8000"
   # ambos off = data plane
   proxy_listen: "off"
   stream_listen: "off"
@@ -46,14 +44,16 @@ enterprise:
     session_conf_secret: kong-session-config
 cluster:
   enabled: true
+  type: NodePort
   tls:
     enabled: true
+    nodePort: 30005
 clustertelemetry:
   enabled: true
+  type: NodePort
   tls:
-    containerPort: 8006
     enabled: true
-    servicePort: 8006
+    nodePort: 30006
     type: ClusterIP
 proxy:
   enabled: false
@@ -61,32 +61,30 @@ admin:
   enabled: true
   http:
     enabled: true
+    nodePort: 30001
   tls:
     enabled: false
   ingress:
-    enabled: true
-    hostname: manager.localhost
-    path: "/"
+    enabled: false
 manager:
   enabled: true
   http:
     enabled: true
+    nodePort: 30002
   tls:
     enabled: false
   ingress:
-    enabled: true
-    hostname: manager.localhost
-    path: "/manager"
-portal:
-  enabled: false
-portalapi:
-  enabled: false
+    enabled: false
 status:
   enabled: true
   http:
     enabled: true
   tls:
     enabled: false
+portal:
+  enabled: false
+portalapi:
+  enabled: false
 postgresql:
   enabled: true
   auth:
