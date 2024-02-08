@@ -12,8 +12,6 @@ In this mode, Kong nodes in a cluster are split into two roles: control plane (C
 - [Instalar Data Plane 2](#instalar-data-plane-2)
 - [Checar data planes](#checar-data-planes)
 - [Acessar aplicações:](#acessar-aplicações)
-- [Configurar o Kong Enterprise on Kubernetes](#configurar-o-kong-enterprise-on-kubernetes)
-- [Desinstalar Kong (opcional):](#desinstalar-kong-opcional)
 
 **Importante:** algumas instruções diferem quando a instalação é em "Free Mode" ou licenciada.
 
@@ -165,25 +163,3 @@ curl -X GET http://localhost:30001/clustering/data-planes -H "kong-admin-token: 
 * Kong Manager:
   * http://localhost:30002
 
-## Configurar o Kong Enterprise on Kubernetes
-
-TODO: nao funciona KIC ainda
-O Kong Enterprise on Kubernetes pode ser configurado tanto pelo Kong Manager quanto pelos objetos (CRDs) do Kubernetes. Exemplo:
-
-```sh
-# cria serviço e rota no Kong via CRDs
-kubectl apply -f kic/
-```
-
-## Desinstalar Kong (opcional):
-
-Remover Kong EE:
-
-```sh
-helm delete kong -n kong-cp
-# se quiser zerar o banco e secrets
-kubectl delete pvc data-kong-postgresql-0 -n kong-cp
-kubectl delete namespace kong-cp
-kubectl delete namespace kong-dp1
-kubectl delete namespace kong-dp2
-```
