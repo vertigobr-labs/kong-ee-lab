@@ -15,12 +15,12 @@ Passos para executar Kong CE localmente (usando o VKPR para subir um cluster k3d
 As seguintes ferramentas de linha de comando devem estar instaladas na estação de trabalho:
 
 - Docker Desktop (OSX/Windows) ou Docker CE (Linux)
-- VKPR
+- vkdr
 - k3d (*)
 - Helm (*)
 - Kubectl (*)
 
-(*) já embutidos no `vkpr` na pasta `~/.vkpr/bin`
+(*) já embutidos no `vkdr` na pasta `~/.vkdr/bin`
 
 **Importante:** este exemplo expõe Kong e sua Admin API localmente nas portas 8000 e 9000 em HTTP (sem TLS).
 
@@ -33,11 +33,11 @@ helm repo update
 
 ## Criar cluster k3d
 
-O VKPR cria um cluster Kubernetes (k3d), o qual já está pronto para expor o Kong Gateway, sua Admin API e Admin UI (Manager) em portas locais arbitrária (8000, 9000 e 9001 respectivamente): 
+O `vkdr` criará um cluster Kubernetes (k3d), o qual posteriormente expor o Kong Gateway, sua Admin API e Admin UI (Manager) em portas locais arbitrárias (8000, 9000 e 9001 respectivamente): 
 
 ```sh
-# roda um cluster k3d usando VKPR
-vkpr infra start --nodeports=2
+# roda um cluster k3d usando vkdr
+vkdr infra start --nodeports=2
 ```
 
 ## Instalar Kong CE:

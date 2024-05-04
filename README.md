@@ -1,16 +1,19 @@
 # kong-ee-lab <!-- omit in toc -->
 
-Instruções para rodar Kong Gateway (Enterprise) usando o chart oficial da Kong, tanto em ambiente local (via docker-compose ou k3d) quanto em ambiente remoto (via Okteto), tanto nos modos "normal" quanto "db-less" (Ingress Controller).
+Este repositório contem instruções para rodar Kong Gateway em ambiente local (usando "docker compose" ou cluster kubernetes local).
+
+Vários cenários são cobertos, incluindo a execução do Kong Gateway (OSS) e Kong Gateway Enterprise tanto nos modos "normal" quanto "db-less" (Ingress Controller).
 
 - [Definições](#definições)
   - [Kong Gateway vs Kong Gateway Enterprise (Free Mode) vs Kong Gateway Enterprise](#kong-gateway-vs-kong-gateway-enterprise-free-mode-vs-kong-gateway-enterprise)
   - [Kong "tradicional" vs Kong db-less vs Kong Ingress Controller](#kong-tradicional-vs-kong-db-less-vs-kong-ingress-controller)
-  - [Kong no Kubernetes](#kong-no-kubernetes)
-  - [Execução local vs Execução remota (Okteto)](#execução-local-vs-execução-remota-okteto)
-- [Instruções de instalação - Docker (docker-compose)](#instruções-de-instalação---docker-docker-compose)
-  - [Kong EE local em modo "normal"](#kong-ee-local-em-modo-normal)
-- [Instruções de instalação - Kubernetes (k3d / vkpr)](#instruções-de-instalação---kubernetes-k3d--vkpr)
-  - [Kong Gateway (OSS) local (k3d) em modo "db-less" (ingress controller)](#kong-gateway-oss-local-k3d-em-modo-db-less-ingress-controller)
+  - [Kong Gateway no Kubernetes](#kong-gateway-no-kubernetes)
+  - [Docker Compose e VKDR](#docker-compose-e-vkdr)
+- [Exemplos com Docker Compose](#exemplos-com-docker-compose)
+  - [Kong CE local em modo "tradicional"](#kong-ce-local-em-modo-tradicional)
+  - [Kong EE local em modo "tradicional"](#kong-ee-local-em-modo-tradicional)
+- [Exemplos com Kubernetes em cluster local (k3d / vkdr)](#exemplos-com-kubernetes-em-cluster-local-k3d--vkdr)
+  - [Kong Gateway (OSS) em modo "db-less" (ingress controller)](#kong-gateway-oss-em-modo-db-less-ingress-controller)
   - [Kong Gateway Enterprise local (k3d) em modo "normal" (com database)](#kong-gateway-enterprise-local-k3d-em-modo-normal-com-database)
   - [Kong Gateway Enterprise local (k3d) em modo "Ingress Controller" (db-less)](#kong-gateway-enterprise-local-k3d-em-modo-ingress-controller-db-less)
   - [Kong Gateway on Kubernetes local (k3d)](#kong-gateway-on-kubernetes-local-k3d)
@@ -28,57 +31,54 @@ Já o Kong Gateway (open-source), a partir da versão 3.5, também possui uma in
 
 ### Kong "tradicional" vs Kong db-less vs Kong Ingress Controller
 
-Um ambiente "tradicional" do Kong permite sua configuração via Admin API. A Admin API é, na verdade, o backend utilizado tanto pelo Kong Manager quanto pelo Konga (alternativa ao Kong Manager desenvolvida pela comunidade). **Neste modo de operação o Kong precisa de um database associado**.
+Um ambiente "tradicional" do Kong persiste sua configuração em database e a expõe via Admin API. A própria Admin API é o backend utilizado pelo Kong Manager. **Neste modo de operação o Kong está associado um database Postgres**.
 
 Um ambiente db-less do Kong tem sua configuração totalmente declarativa, dispensando um banco de dados. Um caso particular de Kong db-less é o Kong Ingress Controller, cuja configuração é feita por objetos no Kubernetes (CRDs).
 
-### Kong no Kubernetes
+### Kong Gateway no Kubernetes
 
 No Kubernetes há [duas opções principais](https://docs.konghq.com/gateway/latest/install/kubernetes/deployment-options/) de executar o Kong Gateway:
 
 - Modo db-less como Ingress Controller (como já mencionamos)
-- Modo tradicional (com database) com ou sem o Ingress Controller
+- Modo tradicional (com database de configuração), com ou sem o Ingress Controller
+- Modo híbrido (com control plane e data plane separados)
+- Data plane somente, subordinado ao Kong Konnect (SaaS da Kong)
 
-O Kong suporta ainda várias outras topologias que não iremos explorar aqui (como modo Híbrido ou subordinado ao Kong Konnect).
+Não iremos explorar nos exemplos o modo Híbrido ou Konnect.
 
-### Execução local vs Execução remota (Okteto)
+### Docker Compose e VKDR
 
-Para execução local na estação de trabalho este repositório possui diversos exemplos:
+Para execução local na estação de trabalho dos cenários que iremos explorar neste repositório, usaremos o `docker compose` e o `vkdr` (que é um utilitário que facilita a execução de clusters k3d).
 
-* Usando o `docker-compose` para subir uma composição de containers especificada em [docker-compose.yml](docker-compose.yml);
+* Os exemplos usando o `docker compose` são bem mais simples e dispensam o uso de Kubernetes;
 
-* Usando o `k3d` para subir um cluster kubernetes local e descartável.
+* Os exemplos usando o kubernetes serão baseados no `k3d` e na CLI `vkdr` (um utilitário da Vertigo que usamos em treinamentos e laboratórios).
 
-O k3d é um utilitário que permite simular um cluster multi-node dentro de um docker engine comum, permitindo trabalhar localmente com as ferramentas kubernetes. *Importante: estamos atualizando os exemplos para utilizarem o [`vkpr`](https://docs.vkpr.net/) para rodar o k3d com algumas configurações pré-definidas*.
-
-Para execução remota em um serviço de nuvem gratuito fornecemos neste repositório exemplos usando o `Okteto`.
-
-O [Okteto](https://okteto.com) é um ambiente self-service de desenvolvimento em kubernetes na nuvem, gratuito para clusters de até 4Gb de RAM. O Okteto permite trabalhar de forma consistente com ambientes de desenvolvimento remotos. 
-
-## Instruções de instalação - Docker (docker-compose)
-
-### Kong EE local em modo "normal"
-
-Este projeto possui um `docker-compose.yml` pronto para uso:
+O `vkdr` pode ser instalado com o comando abaixo:
 
 ```sh
-export KONG_LICENSE_DATA='......'  # deixe vazia se for rodar em free mode
-# sobe e inicializa o BD
-docker-compose up -d kong-db
-docker-compose up kong-init
-# roda o kong
-docker-compose up kong
+curl -sL https://get-vkdr.vee.codes | bash
+# apos instalacao iniciar a CLI uma única vez
+vkdr init
 ```
 
-Endpoints do Kong:
+O `k3d` (baixado pelo próprio `vkdr`) é um utilitário que permite simular um cluster multi-node dentro de um docker engine comum, permitindo faer experimentos complexos com clusters kubernetes descartáveis.
 
-* Kong Gateway: http://localhost:8000
-* Kong Manager (admin UI): http://localhost:8002
-* Kong Admin API: http://localhost:8001
+## Exemplos com Docker Compose
 
-## Instruções de instalação - Kubernetes (k3d / vkpr)
+### Kong CE local em modo "tradicional"
 
-### Kong Gateway (OSS) local (k3d) em modo "db-less" (ingress controller)
+Veja em [KONG_CE_DOCKER_COMPOSE](KONG_CE_DOCKER_COMPOSE.md) um exemplo para rodar Kong Gateway OSS localmente usando apenas o `docker compose`. Portas são expostas em `localhost` para o gateway (8000), sua Admin API (8001) e sua GUI (8002), respectivamente.
+
+### Kong EE local em modo "tradicional"
+
+Veja em [KONG_EE_DOCKER_COMPOSE](KONG_EE_DOCKER_COMPOSE.md) um exemplo para rodar Kong Gateway Enterprise localmente usando apenas o `docker compose`. Portas são expostas em `localhost` para o gateway (8000), sua Admin API (8001) e Kong Manager (8002), respectivamente.
+
+## Exemplos com Kubernetes em cluster local (k3d / vkdr)
+
+O `vkdr` é um utilitário que facilita a execução de clusters k3d. Ele é usado para criar clusters k3d com configurações específicas para laboratórios e treinamentos.
+
+### Kong Gateway (OSS) em modo "db-less" (ingress controller)
 
 Veja em [KONG_CE_LOCAL_DBLESS.md](KONG_CE_LOCAL_DBLESS.md) os passos para executar Kong Gateway localmente em cluster k3d como ingress controller. Três portas são expostas (8000, 9000 e 9001) para o Kong e sua Admin API e GUI, respectivamente.
 

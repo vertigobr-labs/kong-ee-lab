@@ -6,14 +6,9 @@
 
 image:
   repository: kong/kong-gateway
-  tag: "3.5"
+  tag: "3.6"
 env:
   database: postgres
-  pg_host: "kong-postgresql"
-  pg_user: kong
-  pg_password: kong
-  pg_database: kong
-  pg_port: 5432
   portal: off
   admin_gui_url: "http://manager.localhost:8000/manager"
   admin_gui_path: "/manager"
@@ -43,7 +38,7 @@ proxy:
   http:
     enabled: true
   tls:
-    enabled: false
+    enabled: true
   ingress:
     enabled: false
 manager:
@@ -71,7 +66,3 @@ status:
     enabled: false
 postgresql:
   enabled: true
-  auth:
-    username: kong
-    password: kong
-    database: kong
