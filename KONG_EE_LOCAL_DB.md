@@ -17,12 +17,12 @@ Passos para executar Kong Gateway localmente em um cluster k3d e em modo "normal
 As seguintes ferramentas de linha de comando devem estar instaladas na estação de trabalho:
 
 - Docker Desktop (OSX/Windows) ou Docker CE (Linux)
-- VKPR
+- vkdr
 - k3d (*)
 - Helm (*)
 - Kubectl (*)
 
-(*) já embutido no `vkpr` na pasta `~/.vkpr/bin`
+(*) já embutido no `vkdr` na pasta `~/.vkdr/bin`
 
 **Importante:** este exemplo também assume que nomes "*.localhost" resolvem sempre para localhost. Se este não for o caso basta criar as entradas abaixo manualmente em /etc/hosts.
 
@@ -39,14 +39,14 @@ helm repo update
 
 ## Criar cluster k3d
 
-O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Traefik Ingress Controller (porta 8000), mas também pronto para expor o Kong em uma porta local arbitrária (9000). O Traefik atenderá a aplicações web "comuns", enquanto a porta 9000 está reservada para o tráfego de APIs. 
+O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Traefik Ingress Controller (porta 8000), mas também pronto para expor o Kong em uma porta local arbitrária (9000). O Traefik atenderá a aplicações web "comuns" (o que inclui o Kong Manager e a Admin API), enquanto a porta 9000 está reservada para o tráfego de APIs (Kong Gateway). 
 
 ```sh
 # roda um cluster k3d com traefik usando VKPR
-vkpr infra start --enable_traefik=true --nodeports=1
+vkdr infra start --traefik --nodeports=2
 ```
 
-Este exemplo também habilita o Kong Ingress Controller. O Traefik é o ingress controller "default" do cluster e o Kong proxy estará disponível em uma porta dedicada (9000) para tráfego exclusivo de APIs. Esta separação apenas demonstra que é possível ter os endpoints de administração do Kong separados do endpoint do próprio API Gateway.
+Este exemplo também habilita o Kong Ingress Controller. O Traefik é o ingress controller "default" do cluster e o Kong proxy estará disponível em portas dedicadas (9000/9001) para tráfego exclusivo de APIs. Esta separação apenas demonstra que é possível ter os endpoints de administração do Kong separados do endpoint do próprio API Gateway.
 
 ## Configurar licença e secrets
 
