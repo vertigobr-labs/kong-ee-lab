@@ -15,7 +15,7 @@ Vários cenários são cobertos, incluindo a execução do Kong Gateway (OSS) e 
 - [Exemplos com Kubernetes em cluster local (k3d / vkdr)](#exemplos-com-kubernetes-em-cluster-local-k3d--vkdr)
   - [Kong Gateway (OSS) em modo "db-less" (ingress controller)](#kong-gateway-oss-em-modo-db-less-ingress-controller)
   - [Kong Gateway Enterprise local (k3d) em modo "normal" (com database)](#kong-gateway-enterprise-local-k3d-em-modo-normal-com-database)
-  - [Kong Gateway Enterprise local (k3d) em modo "Ingress Controller" (db-less)](#kong-gateway-enterprise-local-k3d-em-modo-ingress-controller-db-less)
+  - [Kong Gateway Enterprise em modo DB-less ("Ingress Controller")](#kong-gateway-enterprise-em-modo-db-less-ingress-controller)
   - [Kong Gateway on Kubernetes local (k3d)](#kong-gateway-on-kubernetes-local-k3d)
   - [Kong Gateway em cluster Okteto](#kong-gateway-em-cluster-okteto)
 
@@ -88,11 +88,9 @@ Veja em [KONG_EE_LOCAL_DB_FREE.md](KONG_EE_LOCAL_DB_FREE.md) os passos para exec
 
 Veja em [KONG_EE_LOCAL_DB.md](KONG_EE_LOCAL_DB.md) os passos para executar Kong Gateway localmente em cluster k3d, com database, RBAC, Ingress Controller e usando uma licença válida. Com RBAC habilitado o Kong Manager exige autenticação (usuário "kong_admin"). Um exemplo adicional com a configuração de uma API via CRDs de Kubernetes é utilizado.
 
-### Kong Gateway Enterprise local (k3d) em modo "Ingress Controller" (db-less)
+### Kong Gateway Enterprise em modo DB-less ("Ingress Controller")
 
-O Kong Gateway restrito ao modo Ingress Controller (db-less) suporta a ampla maioria dos plugins Enterprise (exceto aquele incompatíveis com "db-less"). A configuração do Kong é feita por CRDs no Kubernetes e a Admin API é read-only, mas o Admin UI (Manager) serve para estudar a configuração resultante dos CRDs.
-
-Veja em [KONG_EE_LOCAL_INGRESS.md](KONG_EE_LOCAL_INGRESS.md) os passos para executar o Kong em modo Ingress Controller (db-less) localmente.
+Veja em [KONG_EE_LOCAL_INGRESS.md](KONG_EE_LOCAL_INGRESS.md) os passos para executar o Kong em modo Ingress Controller (db-less) no cluster local, com Admin API e Kong Manager sendo read-only.
 
 ### Kong Gateway on Kubernetes local (k3d)
 
