@@ -6,9 +6,9 @@
 
 image:
   repository: kong/kong-gateway
-  tag: "3.5"
+  tag: "3.6"
 env:
-  # database: "off"
+  database: "off"
   admin_gui_url: "http://manager.localhost:8000/manager"
   admin_gui_path: "/manager"
   admin_gui_api_url: "http://manager.localhost:8000"
@@ -26,7 +26,8 @@ proxy:
     enabled: true
     nodePort: 30000
   tls:
-    enabled: false
+    enabled: true
+    nodePort: 30001
   ingress:
     enabled: false
 admin:
@@ -37,6 +38,7 @@ admin:
     enabled: false
   ingress:
     enabled: true
+    #ingressClassName: "traefik"
     hostname: manager.localhost
     path: "/"
 manager:
@@ -48,6 +50,7 @@ manager:
   ingress:
     enabled: true
     hostname: manager.localhost
+    #ingressClassName: "traefik"
     path: "/manager"
 # portal e portalapi nao existem mais
 portal:

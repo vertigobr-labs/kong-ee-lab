@@ -1,6 +1,8 @@
 # Kong Gateway Enterprise em modo "Ingress Controller" <!-- omit in toc -->
 
-O Kong for Kubernetes Enterprise é uma instalação do Kong Gateway restrita a **apenas o Kong Ingress Controller (db-less) e seus plugins Enterprise**. Passos para executar Kong for Kubernetes Enterprise localmente em um cluster k3d:
+Uma instalação do Kong Gateway Enterprise pode estar restrita a uma configuração feita apenas pelo Ingress Controller, operando efetivamente em modo "db-less". Uma topologia assim suporta a ampla maioria dos plugins Enterprise (exceto aquele incompatíveis com "db-less"), e sua configuração do Kong é feita por CRDs e objetos Kubernetes anotados.
+
+Neste cenário a Admin API e Kong Manager são *read-only*, mas o Manager segue sendo útil para observar a configuração resultante dos CRDs.
 
 - [Pré-requisitos](#pré-requisitos)
 - [Importar chart oficial do Kong:](#importar-chart-oficial-do-kong)
@@ -20,12 +22,12 @@ O Kong for Kubernetes Enterprise é uma instalação do Kong Gateway restrita a 
 As seguintes ferramentas de linha de comando devem estar instaladas na estação de trabalho:
 
 - Docker Desktop (OSX/Windows) ou Docker CE (Linux)
-- VKPR
+- vkdr
 - k3d (*)
 - Helm (*)
 - Kubectl (*)
 
-(*) já embutido no `vkpr` na pasta `~/.vkpr/bin`
+(*) já embutido no `vkdr` na pasta `~/.vkdr/bin`
 
 **Importante:** este exemplo também assume que nomes "*.localhost" resolvem sempre para localhost. Se este não for o caso basta criar as entradas abaixo manualmente em /etc/hosts.
 
@@ -45,8 +47,8 @@ helm repo update
 O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Traefik Ingress Controller (porta 8000), mas também pronto para expor o Kong Ingress Controller em uma porta local arbitrária (9000). O Traefik atenderá a aplicações web "comuns", enquanto a porta 9000 está reservada para o tráfego de APIs. 
 
 ```sh
-# roda um cluster k3d com traefik usando VKPR
-vkpr infra start --enable_traefik=true --nodeports=1
+# roda um cluster k3d com traefik usando vkdr
+vkdr infra start --traefik --nodeports=2
 ```
 
 ## Configurar licença
@@ -88,7 +90,7 @@ Esta é uma instalação "db-less", portanto o Manager e Admin API estarão read
 
 ### Ingress classes
 
-O Traefik tem ingress class "nginx", enquanto a do Kong é "kong".
+O Traefik tem ingress class "traefik" como a default do cluster, enquanto a do Kong é "kong".
 
 ## Desinstalar Kong (opcional):
 

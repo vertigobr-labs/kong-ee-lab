@@ -42,7 +42,7 @@ helm repo update
 O comando abaixo usa o VKPR para criar um cluster Kubernetes (k3d) já com o Traefik Ingress Controller (porta 8000), mas também pronto para expor o Kong em uma porta local arbitrária (9000). O Traefik atenderá a aplicações web "comuns" (o que inclui o Kong Manager e a Admin API), enquanto a porta 9000 está reservada para o tráfego de APIs (Kong Gateway). 
 
 ```sh
-# roda um cluster k3d com traefik usando VKPR
+# roda um cluster k3d com traefik usando vkdr
 vkdr infra start --traefik --nodeports=2
 ```
 

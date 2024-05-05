@@ -9,3 +9,5 @@ figlet.yaml
 *.pem
 registry/
 certs/
+kong-oidc-auth/
+kong-oidc/
