@@ -75,10 +75,11 @@ helm upgrade -i kong -f values-ee-db-licensed.yaml kong/kong
 
 * Kong Gateway (onde ficam suas APIs):
   * http://localhost:9000/
+  * https://localhost:9001/
 * Kong Manager:
-  * http://manager.localhost:8000/manager
+  * http://localhost:8000/manager
 * Kong Admin API:
-  * http://manager.localhost:8000
+  * http://localhost:8000
 
 ## Configurar o Kong no Kubernetes com CRDs
 

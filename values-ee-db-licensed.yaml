@@ -8,13 +8,13 @@
 
 image:
   repository: kong/kong-gateway
-  tag: "3.6"
+  tag: "3.9"
 env:
   database: postgres
   portal: off # nao existe mais
-  admin_gui_url: "http://manager.localhost:8000/manager"
+  admin_gui_url: "http://localhost:8000/manager"
   admin_gui_path: "/manager"
-  admin_gui_api_url: "http://manager.localhost:8000"
+  admin_gui_api_url: "http://localhost:8000"
   proxy_url: "http://localhost:9000"
   log_level: notice
   password:
@@ -46,7 +46,7 @@ admin:
     enabled: false
   ingress:
     enabled: true
-    hostname: manager.localhost
+    hostname: localhost
     path: "/"
 proxy:
   type: NodePort
@@ -54,7 +54,8 @@ proxy:
     enabled: true
     nodePort: 30000
   tls:
-    enabled: false
+    enabled: true
+    nodePort: 30001
   ingress:
     enabled: false
     # hosts:
@@ -68,7 +69,7 @@ manager:
     enabled: false
   ingress:
     enabled: true
-    hostname: manager.localhost
+    hostname: localhost
     path: "/manager"
 # portal e portalapi nao existem mais
 portal:
