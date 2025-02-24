@@ -1,6 +1,6 @@
 # Kong CE local (k3d) - modo normal <!-- omit in toc -->
 
-Passos para executar Kong CE localmente (usando o VKPR para subir um cluster k3d) em modo "dbless".
+Passos para executar Kong CE localmente (usando o VKDR para subir um cluster k3d) em modo "dbless".
 
 - [Pré-requisitos](#pré-requisitos)
 - [Importar chart oficial do Kong:](#importar-chart-oficial-do-kong)

@@ -4,7 +4,7 @@
 
 image:
   repository: kong
-  tag: "3.6"
+  tag: "3.9"
 env:
   admin_gui_api_url: "http://localhost:9000"
   admin_gui_url: "http://localhost:9001"
