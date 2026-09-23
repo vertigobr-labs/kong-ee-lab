@@ -21,11 +21,11 @@ admin:
   type: NodePort
   http:
     enabled: true
-    nodePort: 30000 # vkpr nodeport exposed as 9000
+    nodePort: 30000 # vkdr nodeport exposed as 9000
   tls:
     enabled: false
 proxy:
-  type: LoadBalancer # vkpr LB
+  type: LoadBalancer # vkdr LB
   http:
     enabled: true
   tls:
@@ -36,6 +36,6 @@ manager:
   type: NodePort
   http:
     enabled: true
-    nodePort: 30001 # vkpr nodeport exposed as 9001
+    nodePort: 30001 # vkdr nodeport exposed as 9001
   tls:
     enabled: false
