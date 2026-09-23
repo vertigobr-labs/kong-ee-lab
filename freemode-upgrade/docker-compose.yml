@@ -2,11 +2,13 @@
 # Cenario: banco populado pelo Kong EE 3.9 (ultima versao com "free mode") e
 # depois reaproveitado por uma imagem baseada em Kong OSS 3.10 (VeeCode APIP).
 #
-# Ver README.md nesta pasta para a sequencia de execucao.
+# Ver README.md nesta pasta.
 #
-# O servico "apip" NAO roda migrations de proposito: e ele que demonstra o erro.
-# Para o caminho automatico, use o perfil "auto" (servico "apip-auto"), que
-# encadeia bootstrap -> up -> finish antes de subir o gateway.
+# As migrations do APIP rodam sozinhas, em tres servicos encadeados
+# (bootstrap -> up -> finish). Os tres sao idempotentes e saem com codigo 0
+# quando nao ha o que fazer, entao a cadeia serve tanto para banco novo quanto
+# para banco herdado. Sao servicos separados, e nao um "sh -c", porque a imagem
+# distroless nao tem shell.
 #
 
 x-db-env: &db-env
@@ -27,14 +29,10 @@ x-gateway-env: &gateway-env
   KONG_PROXY_ERROR_LOG: /dev/stderr
   KONG_ADMIN_ERROR_LOG: /dev/stderr
 
-x-apip: &apip
-  image: veecode/kong:3.10.0-veecode.10-distroless
-  environment: *gateway-env
-
 x-apip-migration: &apip-migration
-  <<: *apip
+  image: veecode/kong:3.10.0-veecode.10-distroless
+  environment: *db-env
   restart: on-failure
-  ports: []
 
 services:
   kong-db:
@@ -73,28 +71,10 @@ services:
       - 8001:8001
       - 8002:8002
 
-  # ---------- etapa 2a: APIP sem migrations (demonstra o erro) ----------
-
-  apip:
-    <<: *apip
-    depends_on:
-      kong-db:
-        condition: service_healthy
-    ports:
-      - 8000:8000
-      - 8001:8001
-      - 8002:8002
-
-  # ---------- etapa 2b: APIP com migrations automaticas (perfil "auto") ----------
-  #
-  # Um servico por comando, encadeados por "service_completed_successfully".
-  # Nao ha "sh -c" aqui porque a imagem distroless nao tem shell: cada etapa
-  # precisa ser um unico comando. Os tres sao idempotentes e saem com codigo 0
-  # quando nao ha o que fazer, entao a cadeia e segura a cada "up".
+  # ---------- etapa 2: VeeCode APIP (distroless) no mesmo banco ----------
 
   apip-bootstrap:
     <<: *apip-migration
-    profiles: ["auto"]
     depends_on:
       kong-db:
         condition: service_healthy
@@ -102,7 +82,6 @@ services:
 
   apip-up:
     <<: *apip-migration
-    profiles: ["auto"]
     depends_on:
       apip-bootstrap:
         condition: service_completed_successfully
@@ -110,18 +89,17 @@ services:
 
   apip-finish:
     <<: *apip-migration
-    profiles: ["auto"]
     depends_on:
       apip-up:
         condition: service_completed_successfully
     command: kong migrations finish
 
-  apip-auto:
-    <<: *apip
-    profiles: ["auto"]
+  apip:
+    image: veecode/kong:3.10.0-veecode.10-distroless
     depends_on:
       apip-finish:
         condition: service_completed_successfully
+    environment: *gateway-env
     ports:
       - 8000:8000
       - 8001:8001
