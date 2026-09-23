@@ -1,17 +1,13 @@
+# credenciais e material de chave privada - nunca versionar
 license.json
 *_conf
-teste*
-tmpyml
-okteto-deploy.yaml
-figlet.yaml
-*.pem
-registry/
-certs/
-kong-oidc-auth/
-kong-oidc/
-
-# material de chave privada - nunca versionar
-konnect/
 *.key
 *.crt
+*.pem
+certs/
+konnect/
+
+# scratch local
+teste*
+tmpyml
 .DS_Store
