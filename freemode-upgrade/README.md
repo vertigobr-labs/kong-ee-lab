@@ -3,6 +3,15 @@
 Cenário que sobe o Kong Gateway Enterprise em "free mode", popula um database Postgres com o
 schema dele, e depois migra para uma imagem baseada em Kong OSS (VeeCode APIP).
 
+**O que se descreve aqui anda em duas direções ao mesmo tempo**, e é isso que torna o caso
+diferente de um upgrade comum:
+
+- é um **upgrade de release**, do Kong 3.9 para o 3.10+ do APIP;
+- e é, ao mesmo tempo, um **downgrade de schema**, do schema Enterprise para o do OSS.
+
+O `kong migrations up` sabe subir de release, mas não sabe descer de edição — e é dessa segunda
+direção que vem tudo o que dá errado no roteiro.
+
 O roteiro percorre os **dois caminhos** para sair do free mode e compara o resultado dos dois no
 banco:
 
@@ -16,6 +25,7 @@ banco:
 - [Etapa 3: caminho A — reaproveitar o database](#etapa-3-caminho-a--reaproveitar-o-database)
 - [Etapa 4: caminho B — destruir e recriar](#etapa-4-caminho-b--destruir-e-recriar)
 - [Etapa 5: limpar o dump](#etapa-5-limpar-o-dump)
+- [Até onde o script vai](#até-onde-o-script-vai)
 - [Etapa 6: validate, diff e sync](#etapa-6-validate-diff-e-sync)
 - [Comparação final](#comparação-final)
 - [Recomendações](#recomendações)
@@ -32,9 +42,6 @@ O [VeeCode APIP](https://hub.docker.com/r/veecode/kong) é uma distribuição en
 Gateway **OSS**, mantida pela Vertigo: imagens multi-arch baseadas em RHEL 10, RPMs assinados e um
 gate de segurança via SBOM. A variante `-distroless` não tem shell, gerenciador de pacotes nem
 `curl`. A versão usada aqui é `3.10.0-veecode.10-distroless`, que corresponde ao Kong OSS 3.10.
-
-A troca é ao mesmo tempo uma **mudança de edição** (Enterprise → OSS) e uma **mudança de versão**
-(3.9 → 3.10).
 
 ## Pré-requisitos
 
@@ -167,6 +174,39 @@ uma regra, rode de novo.
 Além dos protocolos `ws`/`wss`, o script já remove `_workspace`, `workspaces`, `consumer_groups`,
 `rbac_roles`, `rbac_users`, `licenses` e a chave `groups` dentro de `consumers` — entidades que não
 aparecem em um dump de free mode, mas apareceriam em um dump de uma instalação licenciada.
+
+## Até onde o script vai
+
+A lista de exclusões do `clean-enterprise.sh` **não é exaustiva** — ela cobre este cenário, não o
+universo Enterprise.
+
+Para um dump de **free mode**, como o deste roteiro, ela é suficiente, e por um motivo que dá para
+verificar:
+
+```sh
+curl -s localhost:8001/ | jq -r '.plugins.available_on_server | keys[]' | sort
+```
+
+Rodando isso contra o Kong EE 3.9.1.2 em free mode e contra o APIP 3.10, sai **a mesma lista de 45
+plugins**. Em free mode o gateway Enterprise não carrega nenhum plugin Enterprise, então nenhum
+deles pode chegar ao dump. Somado ao fato de que `POST /consumer_groups` e `/rbac/users` respondem
+403, sobra pouca coisa que o dump de free mode possa carregar de Enterprise — na prática, os
+protocolos `ws`/`wss`.
+
+Para um dump de uma instalação **licenciada**, a história é outra, e o script fica bem aquém:
+
+- **Plugins Enterprise** são a maior lacuna. `openid-connect`, `rate-limiting-advanced`,
+  `request-validator`, `mtls-auth`, `saml`, `oas-validation` e dezenas de outros aparecem no dump
+  com a configuração deles, e o script não tem regra para nenhum. O sync falha em cada um.
+- **Campos Enterprise dentro de plugins compartilhados**, na mesma linha do `ws`/`wss` que
+  encontramos.
+- **Entidades de workspace** além do `_workspace`, se o dump foi feito com `--all-workspaces`.
+- **Recursos de RBAC**, se foram exportados à parte com `--rbac-resources-only`.
+
+Não faz sentido tentar antecipar essa lista aqui: ela muda a cada release do Kong e depende de
+quais recursos Enterprise a instalação de origem realmente usava. O procedimento é o que a etapa
+anterior mostra — rodar `deck gateway validate`, ler o que ele recusa, acrescentar uma regra, e
+repetir até passar limpo. O `validate` é a fonte da verdade, não o script.
 
 ## Etapa 6: validate, diff e sync
 

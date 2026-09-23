@@ -8,7 +8,11 @@
 # Requer: yq v4 (https://github.com/mikefarah/yq)
 #
 # Cada regra abaixo veio de um erro real do "deck gateway validate" contra o
-# gateway OSS. Rode o validate de novo depois de mexer aqui.
+# gateway OSS.
+#
+# ATENCAO: esta lista NAO e exaustiva - ver README, secao "Ate onde o script
+# vai". Ela cobre um dump de free mode. Para estender: rode o validate, veja o
+# que ele recusa, acrescente uma regra, rode de novo.
 #
 set -euo pipefail
 
