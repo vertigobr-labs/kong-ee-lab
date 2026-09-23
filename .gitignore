@@ -1,13 +1,13 @@
 # credenciais e material de chave privada - nunca versionar
-license.json
 *_conf
 *.key
 *.crt
 *.pem
-certs/
-konnect/
+/license.json
+/certs/
+/konnect/
 
 # scratch local
-teste*
-tmpyml
+/teste*
+/tmpyml
 .DS_Store
