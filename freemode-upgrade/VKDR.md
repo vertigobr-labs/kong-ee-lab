@@ -53,7 +53,8 @@ curl -s http://manager.localhost:8000/ | jq '{version, edition}'
 
 ## A imagem distroless e os init containers do chart
 
-O chart oficial do Kong não roda a imagem distroless sem ajuste, e o erro é pouco óbvio:
+O chart oficial do Kong ainda não lida automaticamente com uma imagem distroless sem ajuste, e o
+erro é pouco óbvio:
 
 ```pre
 Init:CrashLoopBackOff
