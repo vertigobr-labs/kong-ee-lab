@@ -29,6 +29,7 @@ banco:
 - [Etapa 6: validate, diff e sync](#etapa-6-validate-diff-e-sync)
 - [Comparação final](#comparação-final)
 - [Recomendações](#recomendações)
+- [A mesma coisa em Kubernetes](#a-mesma-coisa-em-kubernetes)
 - [Limpeza](#limpeza)
 
 ## Contexto
@@ -270,6 +271,13 @@ Os dois terminam com o gateway funcionando e a mesma configuração no ar. A dif
 Vale notar que sair do free mode via APIP **não é uma perda de funcionalidade**: em free mode os
 recursos Enterprise já estavam desligados. O que se ganha é uma imagem com cadência de patch e
 superfície de ataque menor; o que se perde é o caminho de upgrade para o Enterprise licenciado.
+
+## A mesma coisa em Kubernetes
+
+O [VKDR.md](VKDR.md) refaz o destino deste roteiro em um cluster k3d com a CLI do `vkdr`: Kong em
+modo standard com a imagem distroless do APIP, partindo do `kong-oss.yaml` já limpo. Lá aparecem
+dois problemas que o docker compose não tem — os init containers do chart oficial não rodam em
+imagem sem shell, e o Ingress Controller disputa o banco com o decK.
 
 ## Limpeza
 
