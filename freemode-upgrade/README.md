@@ -13,6 +13,7 @@ o free mode deixou de existir) consegue trocar só a imagem, mantendo o banco?
 - [Etapa 2: trocar para o VeeCode APIP](#etapa-2-trocar-para-o-veecode-apip)
 - [O erro](#o-erro)
 - [A solução e o que ela deixa para trás](#a-solução-e-o-que-ela-deixa-para-trás)
+- [Deixando o compose resolver sozinho](#deixando-o-compose-resolver-sozinho)
 - [Rollback](#rollback)
 - [Recomendações](#recomendações)
 - [Limpeza](#limpeza)
@@ -134,6 +135,58 @@ Ou seja: **funciona, mas não é uma migração limpa.** É um banco Enterprise 
 binário OSS, com dívida de schema acumulada e um ledger de migrations inconsistente entre as duas
 edições. Nada disso é suportado pela Kong — a documentação cobre upgrades dentro da mesma edição,
 não Enterprise → OSS.
+
+## Deixando o compose resolver sozinho
+
+O passo manual acima pode ser automatizado, e o compose deste cenário já traz isso pronto no
+perfil `auto`:
+
+```sh
+docker compose --profile auto up apip-auto
+```
+
+Isso funciona tanto em um banco **vazio** quanto em um banco **vindo do Enterprise**, sem decidir
+nada antes: os três comandos de migration do Kong são idempotentes e saem com código 0 quando não
+há o que fazer.
+
+| Comando | Banco vazio | Banco já populado |
+| --- | --- | --- |
+| `kong migrations bootstrap` | aplica o schema | `Database already bootstrapped` — exit 0 |
+| `kong migrations up` | `Database needs bootstrapping` — **exit 1** | aplica o pendente, ou `Database is already up-to-date` — exit 0 |
+| `kong migrations finish` | nada a fazer — exit 0 | `No pending migrations to finish` — exit 0 |
+
+Como só o `up` falha em banco vazio, a ordem `bootstrap` → `up` → `finish` cobre os dois casos e é
+segura de rodar a cada `docker compose up`.
+
+O detalhe é **como** encadear. O idioma usual seria um `sh -c "kong migrations bootstrap && kong
+migrations up"`, mas a imagem distroless não tem shell:
+
+```sh
+docker run --rm --entrypoint /bin/sh veecode/kong:3.10.0-veecode.10-distroless -c "echo oi"
+# OCI runtime create failed: no such file or directory
+```
+
+Não há `/bin/sh`, `/bin/bash` nem `/usr/bin/sh` — é exatamente o ponto da variante distroless. Duas
+saídas:
+
+1. **Um serviço por comando, encadeados pelo próprio compose** (o que este cenário faz). Cada
+   serviço roda um único comando e o próximo espera pelo anterior com
+   `condition: service_completed_successfully`. Não precisa de shell e funciona na distroless.
+2. **Usar a imagem regular só para as migrations** e a distroless em runtime. A tag
+   `veecode/kong:3.10.0-veecode.10` (sem `-distroless`) tem shell, então aceita `sh -c`. É o padrão
+   "toolbox para migrar, distroless para servir".
+
+**Mas automatizar não limpa nada.** O perfil `auto` só evita o passo manual — o banco resultante
+continua sendo o mesmo híbrido descrito acima. A diferença fica evidente comparando os dois
+caminhos:
+
+| | Banco nascido no APIP/OSS | Banco herdado do Enterprise |
+| --- | --- | --- |
+| Tabelas | **35** | **91** |
+| Subsistemas `enterprise*` em `schema_meta` | 0 | 11 |
+
+São 56 tabelas a mais que o gateway nunca vai usar. Automatizar a migration torna o caminho
+conveniente, não correto.
 
 ## Rollback
 
