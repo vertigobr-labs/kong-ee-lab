@@ -1,0 +1,91 @@
+#
+# Valores para testes em k3d local.
+# Esta configuração assume que nomes "*.localhost" resolvem para localhost. Se não for o caso basta
+# criar entradas manualmente em /etc/hosts.
+#
+# Atenção para possíveis problemas com CORS (https://docs.konghq.com/enterprise/1.5.x/deployment/dns-considerations/)
+#
+
+image:
+  repository: kong/kong-gateway
+  tag: "3.6"
+env:
+  database: postgres
+  portal: off # nao existe mais
+  admin_gui_url: "https://manager.localhost:8000/manager"
+  admin_gui_path: "/manager"
+  admin_gui_api_url: "https://manager.localhost:8000"
+  #proxy_url: "http://localhost:9000"
+  log_level: notice
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+ingressController:
+  enabled: true
+  installCRDs: false
+  env:
+    kong_admin_token:
+      valueFrom:
+        secretKeyRef:
+          name: kong-enterprise-superuser-password
+          key: password
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  rbac:
+    enabled: true
+    admin_gui_auth: basic-auth
+    session_conf_secret: kong-session-config
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    tls: kong-admin-tls
+    hostname: manager.localhost
+    path: "/"
+proxy:
+  type: NodePort
+  http:
+    enabled: true
+    nodePort: 30000
+  tls:
+    enabled: true
+  ingress:
+    enabled: false
+    # hosts:
+    #   - kong.localhost
+    # path: "/"
+manager:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    tls: kong-admin-tls
+    hostname: manager.localhost
+    path: "/manager"
+# portal e portalapi nao existem mais
+portal:
+  enabled: false
+portalapi:
+  enabled: false
+# status
+status:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+
+# postgres common issues:
+# https://github.com/Kong/charts/blob/main/charts/kong/FAQs.md#kong-fails-to-start-after-helm-upgrade-when-postgres-is-used-what-do-i-do
+postgresql:
+  enabled: true

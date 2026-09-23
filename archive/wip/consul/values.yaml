@@ -1,0 +1,79 @@
+# Contains values that affect multiple components of the chart.
+global:
+  # The main enabled/disabled setting.
+  # If true, servers, clients, Consul DNS and the Consul UI will be enabled.
+  enabled: true
+  # The prefix used for all resources created in the Helm chart.
+  name: consul
+  # The name of the datacenter that the agents should register as.
+  datacenter: dc1
+  # Enables TLS across the cluster to verify authenticity of the Consul servers and clients.
+  tls:
+    enabled: true
+  # Enables ACLs across the cluster to secure access to data and APIs.
+  acls:
+    # If true, automatically manage ACL tokens and policies for all Consul components.
+    manageSystemACLs: true
+# Configures values that configure the Consul server cluster.
+server:
+  enabled: true
+  # The number of server agents to run. This determines the fault tolerance of the cluster.
+  replicas: 1
+# Contains values that configure the Consul UI.
+ui:
+  enabled: true
+  # Registers a Kubernetes Service for the Consul UI as a NodePort.
+  service:
+    type: NodePort
+    nodePort:
+      https: 30000
+# Configures and installs the automatic Consul Connect sidecar injector.
+connectInject:
+  enabled: true
+  transparentProxy:
+    defaultEnabled: true
+  default: true
+  apiGateway:
+    manageExternalCRDs: true
+    managedGatewayClass:
+      serviceType: LoadBalancer
+
+syncCatalog:
+  # True if you want to enable the catalog sync. Set to "-" to inherit from
+  # global.enabled.
+  enabled: true
+  # If true, will sync Kubernetes services to Consul. This can be disabled to
+  # have a one-way sync.
+  toConsul: true
+  # If true, will sync Consul services to Kubernetes. This can be disabled to
+  # have a one-way sync.
+  toK8S: false
+
+  # List of k8s namespaces to sync the k8s services from.
+  # If a k8s namespace is not included in this list or is listed in `k8sDenyNamespaces`,
+  # services in that k8s namespace will not be synced even if they are explicitly
+  # annotated. Use `["*"]` to automatically allow all k8s namespaces.
+  #
+  # For example, `["namespace1", "namespace2"]` will only allow services in the k8s
+  # namespaces `namespace1` and `namespace2` to be synced and registered
+  # with Consul. All other k8s namespaces will be ignored.
+  #
+  # To deny all namespaces, set this to `[]`.
+  #
+  # Note: `k8sDenyNamespaces` takes precedence over values defined here.
+  # @type: array<string>
+  k8sAllowNamespaces: ["default", "vkpr"]
+
+  # List of k8s namespaces that should not have their
+  # services synced. This list takes precedence over `k8sAllowNamespaces`.
+  # `*` is not supported because then nothing would be allowed to sync.
+  #
+  # For example, if `k8sAllowNamespaces` is `["*"]` and `k8sDenyNamespaces` is
+  # `["namespace1", "namespace2"]`, then all k8s namespaces besides `namespace1`
+  # and `namespace2` will be synced.
+  # @type: array<string>
+  k8sDenyNamespaces: ["kube-system", "kube-public", "consul"]
+
+  consulNamespaces:
+    mirroringK8S: false
+

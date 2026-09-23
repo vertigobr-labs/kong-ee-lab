@@ -11,3 +11,9 @@ registry/
 certs/
 kong-oidc-auth/
 kong-oidc/
+
+# material de chave privada - nunca versionar
+konnect/
+*.key
+*.crt
+.DS_Store

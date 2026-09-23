@@ -1,20 +1,21 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: cep-ingress
+  name: whoami-kong
   annotations:
+    kubernetes.io/ingress.class: "kong"
     konghq.com/strip-path: "true"
     konghq.com/preserve-host: "false"
     konghq.com/protocols: "http"
+    dev.okteto.com/generate-host: "true"
 spec:
-  ingressClassName: kong
   rules:
   - http:
       paths:
-      - path: /cep
+      - path: /who
         pathType: Prefix
         backend:
           service:
-            name: cep
-            port:
+            name: whoami
+            port: 
               number: 80

@@ -1,0 +1,79 @@
+#
+# Valores para testes em k3d local.
+# Esta configuração assume que nomes "*.localhost" resolvem para localhost. Se não for o caso basta
+# criar entradas manualmente em /etc/hosts .
+#
+
+image:
+  repository: kong/kong-gateway
+  tag: "3.5"
+env:
+  database: postgres
+  pg_host: "kong-postgresql"
+  pg_user: kong
+  pg_password: kong
+  pg_database: kong
+  pg_port: 5432
+  portal: off
+  admin_gui_url: "http://manager.localhost:8000/manager"
+  admin_gui_path: "/manager"
+  admin_gui_api_url: "http://manager.localhost:8000"
+  proxy_url: "http://localhost:8000"
+  log_level: notice
+ingressController:
+  enabled: true
+enterprise:
+  enabled: true
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: manager.localhost
+    path: "/"
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+proxy:
+  type: LoadBalancer
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+manager:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: manager.localhost
+    path: "/manager"
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+portal:
+  enabled: false
+portalapi:
+  enabled: false
+status:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+postgresql:
+  enabled: true
+  auth:
+    username: kong
+    password: kong
+    database: kong
+
+plugins:
+  configMaps:
+  - pluginName: kong-oidc-auth
+    name: kong-plugin-oidc

@@ -1,10 +1,12 @@
 #
-# Valores para testes em k3d local.
+# Valores para testes em k3d local (Kong OSS, db-less / ingress controller).
+#
+# helm upgrade -i kong -f values-dbless.yaml kong/kong --version 3.4.1
 #
 
 image:
   repository: kong
-  tag: "3.9"
+  tag: "3.9.3"
 env:
   admin_gui_api_url: "http://localhost:9000"
   admin_gui_url: "http://localhost:9001"
@@ -12,9 +14,6 @@ env:
   log_level: info
 ingressController:
   enabled: true
-  # image:
-  #   repository: kong/kubernetes-ingress-controller
-  #   tag: "3.0"
 enterprise:
   enabled: false
 admin:

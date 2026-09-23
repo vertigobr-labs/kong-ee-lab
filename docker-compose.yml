@@ -1,30 +1,31 @@
 #
+# Kong Gateway (OSS) com database Postgres.
+#
 # COMO USAR:
 #
-# export KONG_LICENSE_DATA="..."  # deixe vazia se for rodar em free mode
-# docker-compose up -d kong-db
-# docker-compose up kong-init
-# docker-compose up kong
+# docker compose up -d kong-db
+# docker compose up kong-init    # roda as migrations
+# docker compose up -d kong
 #
-# KONG MANAGER: http://localhost:8002
+# Kong Gateway:   http://localhost:8000
+# Kong Admin API: http://localhost:8001
+# Kong Manager:   http://localhost:8002
 #
-# Importante: 
-# - Se usar licença irá rodar em free mode, onde não existe o Dev Portal, RBAC etc.
-# - Se usar licença o login é kong_admin / vert1234 (KONG_PASSWORD)
+# Atencao: ao subir de uma versao antiga do Postgres e preciso recriar o volume
+# ("docker compose down -v"), pois os data directories nao sao compativeis.
 #
-#version: "2"
 
 services:
   kong-db:
-    image: postgres:9.6
+    image: postgres:17
     environment:
       - POSTGRES_DB=kong
       - POSTGRES_USER=kong
       - POSTGRES_PASSWORD=kong
     volumes:
-      - kongdb:/var/lib/postgresql
+      - kongdb:/var/lib/postgresql/data
   kong-init:
-    image: kong:3.6
+    image: kong:3.9.3
     depends_on:
       kong-db:
         condition: service_started
@@ -37,7 +38,7 @@ services:
       KONG_LOG_LEVEL: debug
     command: kong migrations bootstrap
   kong:
-    image: kong:3.6
+    image: kong:3.9.3
     depends_on:
       kong-init:
         condition: service_completed_successfully
@@ -61,7 +62,5 @@ services:
       - 8444:8444
       - 8002:8002
       - 8445:8445
-      - 8003:8003
-      - 8004:8004
 volumes:
   kongdb:

@@ -1,0 +1,52 @@
+# Source: kong/templates/admission-webhook.yaml
+kind: ValidatingWebhookConfiguration
+apiVersion: admissionregistration.k8s.io/v1
+metadata:
+  name: kong-ingress-kong-validations
+  namespace: andrevtg
+  labels:
+    app.kubernetes.io/name: kong
+    # helm.sh/chart: kong-2.19.0
+    # app.kubernetes.io/instance: "kong-ingress"
+    # app.kubernetes.io/managed-by: "Helm"
+    # app.kubernetes.io/version: "3.2"
+webhooks:
+- name: validations.kong.konghq.com
+  objectSelector:
+    matchExpressions:
+    - key: owner
+      operator: NotIn
+      values:
+      - helm
+  failurePolicy: Ignore
+  sideEffects: None
+  admissionReviewVersions: ["v1beta1"]
+  rules:
+  - apiGroups:
+    - configuration.konghq.com
+    apiVersions:
+    - '*'
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - kongconsumers
+    - kongplugins
+    - kongclusterplugins
+    - kongingresses
+    scope: "Namespaced"
+  - apiGroups:
+    - ''
+    apiVersions:
+    - 'v1'
+    operations:
+    - UPDATE
+    resources:
+    - secrets
+    scope: "Namespaced"
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURKRENDQWd5Z0F3SUJBZ0lSQU0rSzIyUHNHV2poT2xjYWh3cDJ6cVV3RFFZSktvWklodmNOQVFFTEJRQXcKSERFYU1CZ0dBMVVFQXhNUmEyOXVaeTFoWkcxcGMzTnBiMjR0WTJFd0hoY05Nak13TkRFME1qRTBNRFV3V2hjTgpNek13TkRFeE1qRTBNRFV3V2pBY01Sb3dHQVlEVlFRREV4RnJiMjVuTFdGa2JXbHpjMmx2YmkxallUQ0NBU0l3CkRRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0NBUW9DZ2dFQkFPZFRHNHpkclVNQXFLdHVyZnp6bUQvZkF6VTcKY3YwK2Qxd2Y5bjZPTjVkbGRCZWE0V0t4czQ0SzhOTjNiWUlJckpOaVJJWXdyam1pWUR1OGV3NEVRVHZKdHBxZAo3OTB4VlJDRDNiVTZEb1lIU0pXNUpjSVg1eWtKdkdBZjZnVVF1UzA4c0JyRktkL0MySzVKcGJJSXlHN2VZL1MzCndYS2NEdjB2V2JCd0dFYWlpam13S0V3Y2JhMGdhaWd2cWRzMzYyZGN4NFZnZDFKUmdWM0F2M3FDSkl4MlBJeHoKMlZ2Tk5HSUdTMVBNZmJnYXB2V0lyTDlaWHBJUWNtR2xwR0NPayt3amxkSTNxdVRnMzA4U29JanB2SUxWa0VlVApiVktyTmM0dTNkWEZycjdDM0g3MWttZlRpSmRFOW5PaGR0bUxGd3ZrZW9CYXRkU3lqd1JQRTl3K2IwY0NBd0VBCkFhTmhNRjh3RGdZRFZSMFBBUUgvQkFRREFnS2tNQjBHQTFVZEpRUVdNQlFHQ0NzR0FRVUZCd01CQmdnckJnRUYKQlFjREFqQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01CMEdBMVVkRGdRV0JCUS9VVVhSVE8wUXAwOHNNRHZ3OENqZApHeGtaN3pBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQVNOSHdQSGpZK1dSMFM3M3lkMUw5bWdHVlVReHhvekJaCnBTQjc0eG5aajhJZGtCQUNlSXJaZHZDT1VnQUFJVUVvNkFQbUl4cWMrMW41RkNzazBOcjBkZ000NkNpYiswY2MKV0E3Vk5sRjN1V2IwMWdoRFlhREJld3RyMk1ac2hoeDh6NWxYeXdOc3JxVHRsRDdSWkF5a3B6Q2pObm5wdm1SMQpuSzExaXJrdVBRNTB5VkxaTHROUHNrNzhqdTRCMkNmUXZkWU5MV1ExckxmTmxSd0FzMHVjb2RybUR3UDNaN0dNClJ2RjU0M3IyWlpoam53aTdidkV5R2taSVhaUFdwSHhBblByZjhoUjYxVFNzOXQ0TDV0c2NCRVdIZkZEK3YxZUQKdVVvUTRPdWhSMXkxRGJ4RHZHQlZyUjl6cWdieTVGTDFKdTBXN3FGdFhnWXZUM04wcld4M0pBPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    service:
+      name: kong-ingress-kong-validation-webhook
+      namespace: andrevtg
+

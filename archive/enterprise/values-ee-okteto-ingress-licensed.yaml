@@ -1,0 +1,92 @@
+#
+# Valores para deployment do Kong Gateway no Okteto (free mode).
+#
+
+image:
+  repository: kong/kong-gateway
+  #tag: "2.8"
+env:
+  portal: off
+  admin_gui_url: "https://kong-kong-manager-NAMESPACE.cloud.okteto.net"
+  admin_api_uri: "https://kong-kong-admin-NAMESPACE.cloud.okteto.net"
+  proxy_url: "https://kong-kong-proxy-NAMESPACE.cloud.okteto.net"
+  log_level: debug
+ingressController:
+  enabled: true
+  image:
+    repository: kong/kubernetes-ingress-controller
+    tag: "2.5-redhat"
+  installCRDs: false
+  ingressClass: "kong"
+  skipIngressClass: true
+  skipClusterRoles: true
+  watchNamespaces: [ "andrevtg" ]
+  env:
+    enable_controller_kongclusterplugin: "false"
+    enable_controller_udpingress: "false"
+    enable_controller_ingress_class_networkingv1: "false"
+    enable_controller_ingress_class: "false"
+    dump_config: "true"
+    log_level: "trace"
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  smtp:
+    disabled: true
+  # rbac:
+  #   enabled: true
+  #   admin_gui_auth: basic-auth
+  #   session_conf_secret: kong-session-config
+  vitals:
+    enabled: false
+  portal:
+    enabled: false
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+proxy:
+  enabled: true
+  type: ClusterIP
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+manager:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  ingress:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+portal:
+  enabled: false
+portalapi:
+  enabled: false
+status:
+  enabled: true
+  http:
+    enabled: true
+postgresql:
+  enabled: false
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+

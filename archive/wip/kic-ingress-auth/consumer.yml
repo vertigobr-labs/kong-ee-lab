@@ -1,0 +1,13 @@
+#
+# user teste
+# password senha
+#
+
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: admin
+username: kong_admin
+credentials:
+- testepwd
+

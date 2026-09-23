@@ -1,0 +1,29 @@
+#
+# Deplyment apenas do ingress controller (sem Kong)
+#
+
+# image:
+#   repository: kong
+#   tag: "3.2"
+deployment:
+  kong:
+    enabled: false
+  serviceAccount:
+    create: false
+    name: kong-kong
+env:
+  log_level: notice
+ingressController:
+  enabled: true
+  installCRDs: false
+  ingressClass: nginx
+  watchNamespaces:
+    - andrevtg
+  env:
+    enable_controller_kongclusterplugin: false
+    enable_controller_ingress_class_networkingv1: false
+    kong_admin_url: "http://kong-kong-admin:8001"
+    publish_service: "andrevtg/kong-kong-proxy"
+    update_status: false
+enterprise:
+  enabled: false

@@ -1,0 +1,34 @@
+#
+# Valores para testes em k3d local.
+#
+
+# image:
+#   repository: kong
+#   tag: "3.2"
+env:
+  log_level: notice
+ingressController:
+  enabled: false # vamos instalar por fora
+  installCRDs: false
+  admissionWebhook:
+    enabled: false
+  watchNamespaces:
+    - andrevtg
+enterprise:
+  enabled: false
+admin:
+  enabled: true
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+proxy:
+  type: ClusterIP
+  http:
+    enabled: true
+  tls:
+    enabled: false
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
