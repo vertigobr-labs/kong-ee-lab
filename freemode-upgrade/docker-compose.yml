@@ -1,0 +1,81 @@
+#
+# Cenario: banco populado pelo Kong EE 3.9 (ultima versao com "free mode") e
+# depois reaproveitado por uma imagem baseada em Kong OSS 3.10 (VeeCode APIP).
+#
+# Ver README.md nesta pasta para a sequencia de execucao.
+#
+
+services:
+  kong-db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    volumes:
+      - kongdb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------- etapa 1: Kong Gateway Enterprise 3.9 em free mode ----------
+
+  kong-ee-init:
+    image: kong/kong-gateway:3.9.1.2
+    depends_on:
+      kong-db:
+        condition: service_healthy
+    restart: on-failure
+    environment: &ee-env
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: kong
+      KONG_LOG_LEVEL: info
+    command: kong migrations bootstrap
+
+  kong-ee:
+    image: kong/kong-gateway:3.9.1.2
+    depends_on:
+      kong-ee-init:
+        condition: service_completed_successfully
+    environment:
+      <<: *ee-env
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_ADMIN_GUI_URL: http://localhost:8002
+      KONG_ADMIN_GUI_API_URL: http://localhost:8001
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8002:8002
+
+  # ---------- etapa 2: VeeCode APIP (distroless) no mesmo banco ----------
+
+  apip:
+    image: veecode/kong:3.10.0-veecode.10-distroless
+    depends_on:
+      kong-db:
+        condition: service_healthy
+    environment:
+      <<: *ee-env
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_ADMIN_GUI_URL: http://localhost:8002
+      KONG_ADMIN_GUI_API_URL: http://localhost:8001
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8002:8002
+
+volumes:
+  kongdb:

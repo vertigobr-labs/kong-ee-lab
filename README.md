@@ -35,6 +35,7 @@ vkdr init
 | --- | --- | --- |
 | Modo tradicional (com database), via docker compose | [KONG_CE_DOCKER_COMPOSE.md](KONG_CE_DOCKER_COMPOSE.md) | `docker-compose.yml` |
 | Modo db-less (ingress controller), em cluster k3d | [KONG_CE_LOCAL_DBLESS.md](KONG_CE_LOCAL_DBLESS.md) | `values-dbless.yaml` |
+| Sair do "free mode" reaproveitando o database | [freemode-upgrade/](freemode-upgrade/README.md) | `freemode-upgrade/docker-compose.yml` |
 
 O exemplo em k3d inclui a configuração de uma API por CRDs do Kubernetes, na pasta `kic/`.
 
