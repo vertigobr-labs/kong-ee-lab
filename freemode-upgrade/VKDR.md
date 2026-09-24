@@ -92,27 +92,24 @@ O `kong-oss.yaml` já passou pelo `clean-enterprise.sh` no outro roteiro, então
 tratamento adicional. Mas ele precisa de **tags** — a razão está na seção seguinte:
 
 ```sh
-yq '
-  (.services // []) |= map(.tags = ["deck-managed"]
-    | (.routes  // []) |= map(.tags = ["deck-managed"])
-    | (.plugins // []) |= map(.tags = ["deck-managed"]))
-  | (.consumers // []) |= map(.tags = ["deck-managed"])
-' kong-oss.yaml > kong-oss-tagged.yaml
+yq '._info.select_tags = ["deck-managed"]' kong-oss.yaml > kong-oss-tagged.yaml
 ```
+
+Com `_info.select_tags` no arquivo, o próprio decK marca com a tag **todas** as entidades que
+cria — inclusive plugins de rota e credenciais de consumer — e passa a enxergar só o que a carrega.
+Não é preciso marcar entidade por entidade nem passar `--select-tag`.
 
 E então o ciclo normal do decK, apontando para a Admin API em `manager.localhost`:
 
 ```sh
 deck gateway validate kong-oss-tagged.yaml --kong-addr http://manager.localhost:8000
-deck gateway diff     kong-oss-tagged.yaml --kong-addr http://manager.localhost:8000 \
-  --select-tag deck-managed
-deck gateway sync     kong-oss-tagged.yaml --kong-addr http://manager.localhost:8000 \
-  --select-tag deck-managed
+deck gateway diff     kong-oss-tagged.yaml --kong-addr http://manager.localhost:8000
+deck gateway sync     kong-oss-tagged.yaml --kong-addr http://manager.localhost:8000
 ```
 
 ```pre
 Summary:
-  Created: 6
+  Created: 10
   Updated: 0
   Deleted: 0
 ```
@@ -134,7 +131,7 @@ deleting service vkdr.kong-kong-admin.8001
 deleting upstream kong-kong-manager.vkdr.8002.svc
 deleting upstream kong-kong-admin.vkdr.8001.svc
 Summary:
-  Created: 6
+  Created: 10
   Updated: 0
   Deleted: 8
 ```
@@ -143,9 +140,9 @@ Um `sync` assim **apagaria o endpoint pelo qual o próprio decK está falando** 
 recriá-lo logo em seguida, deixando o ambiente oscilando.
 
 O KIC marca tudo o que cria com a tag `managed-by-ingress-controller`. A solução é escopar o decK
-por tag, como na etapa 2: marque as suas entidades com uma tag própria e passe `--select-tag`.
-O decK então só enxerga e gerencia o que carrega aquela tag, e ignora o que é do KIC —
-`Deleted: 0`.
+por tag, como na etapa 2: declare uma tag própria em `_info.select_tags` (ou passe
+`--select-tag`). O decK então só enxerga e gerencia o que carrega aquela tag, e ignora o que é do
+KIC — `Deleted: 0`.
 
 Isso vale para qualquer cluster em que o KIC e o decK convivam, não só para este laboratório.
 
@@ -158,6 +155,18 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8000/cep/20020080/json
 curl -s -H "apikey: segredo123" http://localhost:8000/cep/20020080/json | jq -r .logradouro
 # Avenida Marechal Câmara
 ```
+
+A rota OAuth também, com um token novo. No cluster, o HTTPS do proxy fica em `localhost:8001`:
+
+```sh
+curl -sk https://localhost:8001/cep-oauth/oauth2/token -d grant_type=client_credentials \
+  -d client_id=cliente123 -d client_secret=segredo456 | tee token.json
+curl -s -H "Authorization: Bearer $(jq -r .access_token token.json)" \
+  http://localhost:8000/cep-oauth/20020080/json | jq -r .logradouro
+```
+
+Token novo, porque os emitidos pelo Enterprise não vêm no `kong-oss.yaml` — é o caminho B. Para
+preservá-los, veja o caminho C no [README.md](README.md).
 
 Admin API intacta, ou seja, o KIC não foi atropelado:
 
@@ -187,4 +196,5 @@ docker compose, e nenhuma tabela fantasma. O banco nasceu no APIP e nunca viu o 
 ```sh
 vkdr kong remove
 vkdr infra stop
+rm -f kong-oss-tagged.yaml token.json
 ```

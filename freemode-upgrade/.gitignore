@@ -1,3 +1,8 @@
 # artefatos gerados pelo roteiro
 kong.yaml
 kong-oss.yaml
+token.json
+kong-ids.yaml
+kong-oss-ids.yaml
+oauth2-tokens.jsonl
+kong-oss-tagged.yaml

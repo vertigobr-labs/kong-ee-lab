@@ -24,6 +24,10 @@ yq '
   #    http, https").
   (.. | select(has("protocols")).protocols) |= map(select(. != "ws" and . != "wss"))
 
+  # 1b. campo Enterprise no plugin oauth2 ("config.persistent_refresh_token:
+  #     unknown field").
+  | (.. | select(has("name") and .name == "oauth2").config) |= del(.persistent_refresh_token)
+
   # 2. workspaces: o Enterprise organiza entidades em workspaces; no OSS nao
   #    existe esse conceito de configuracao.
   | del(._workspace)
